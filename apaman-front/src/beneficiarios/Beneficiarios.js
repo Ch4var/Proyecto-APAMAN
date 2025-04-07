@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 export default function Beneficiarios() {
     const [beneficiarios, setBeneficiarios] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         loadBeneficiarios();
@@ -12,15 +14,27 @@ export default function Beneficiarios() {
         try {
             const result = await axios.get("http://localhost:8080/Beneficiarios");
             setBeneficiarios(result.data);
-            console.log(result.data);
         } catch (error) {
             console.error("Error cargando beneficiarios", error);
         }
     };
 
+    const deleteBeneficiario = async (id) => {
+        await axios.delete(`http://localhost:8080/Beneficiario/${id}`)
+    }
+
     return (
         <div className="container mt-4">
-            <h2 className="mb-4">Lista de Beneficiarios</h2>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+                <h2 className="mb-0">Lista de Beneficiarios</h2>
+                <button
+                    className="btn btn-success"
+                    onClick={() => navigate("/beneficiaries/add")}
+                >
+                    Agregar Beneficiario
+                </button>
+            </div>
+
             <div className="table-responsive">
                 <table className="table table-bordered table-striped">
                     <thead className="table-dark">
@@ -44,6 +58,7 @@ export default function Beneficiarios() {
                         <th>Pensionado</th>
                         <th>Presupuesto</th>
                         <th>Observaciones</th>
+                        <th>Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -68,6 +83,24 @@ export default function Beneficiarios() {
                             <td>{b.pensionado}</td>
                             <td>{b.presupuesto}</td>
                             <td>{b.observaciones}</td>
+                            <td>
+                                <button className="btn btn-primary mx-2">Ver</button>
+                                <button
+                                    className="btn btn-outline-primary mx-2"
+                                    onClick={() => navigate(`/beneficiaries/edit/${b.cedula}`)}
+                                >
+                                    Editar
+                                </button>
+                                <button
+                                    className="btn btn-danger mx-2"
+                                    onClick={async () => {
+                                        await deleteBeneficiario(b.cedula);
+                                        loadBeneficiarios();
+                                    }}
+                                >
+                                    Borrar
+                                </button>
+                            </td>
                         </tr>
                     ))}
                     </tbody>
