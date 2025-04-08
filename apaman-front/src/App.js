@@ -5,6 +5,7 @@ import AdminPanel from "./layout/AdminPanel";
 import Beneficiarios from "./beneficiarios/Beneficiarios";
 import AddBeneficiario from "./beneficiarios/AddBeneficiario";
 import EditBeneficiario from "./beneficiarios/EditBeneficiario";
+import ViewBeneficiario from "./beneficiarios/ViewBeneficiario";
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
                 <Route path="/beneficiaries" element={<Beneficiarios />} />
                 <Route path="/beneficiaries/add" element={<AddBeneficiario />} />
                 <Route path="/beneficiaries/edit/:id" element={<EditBeneficiario />} />
+                <Route path="/beneficiaries/view/:id" element={<ViewBeneficiario />} />
             </Routes>
         </Router>
     );

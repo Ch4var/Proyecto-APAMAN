@@ -84,7 +84,13 @@ export default function Beneficiarios() {
                             <td>{b.presupuesto}</td>
                             <td>{b.observaciones}</td>
                             <td>
-                                <button className="btn btn-primary mx-2">Ver</button>
+                                <button
+                                    className="btn btn-primary mx-2"
+                                    onClick={() => navigate(`/beneficiaries/view/${b.cedula}`)}
+                                >
+                                    Ver
+                                </button>
+
                                 <button
                                     className="btn btn-outline-primary mx-2"
                                     onClick={() => navigate(`/beneficiaries/edit/${b.cedula}`)}
