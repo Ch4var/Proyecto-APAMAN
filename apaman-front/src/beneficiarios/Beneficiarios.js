@@ -27,12 +27,20 @@ export default function Beneficiarios() {
         <div className="container mt-4">
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <h2 className="mb-0">Lista de Beneficiarios</h2>
-                <button
-                    className="btn btn-success"
-                    onClick={() => navigate("/beneficiaries/add")}
-                >
-                    Agregar Beneficiario
-                </button>
+                <div>
+                    <button
+                        className="btn btn-info mx-2"
+                        onClick={() => navigate("/beneficiaries/search")}
+                    >
+                        Buscar Beneficiario
+                    </button>
+                    <button
+                        className="btn btn-success"
+                        onClick={() => navigate("/beneficiaries/add")}
+                    >
+                        Agregar Beneficiario
+                    </button>
+                </div>
             </div>
 
             <div className="table-responsive">

@@ -53,7 +53,6 @@ public class BeneficiarioController {
                     beneficiario.setGradoEscolaridad(newBeneficiario.getGradoEscolaridad());
                     beneficiario.setEstadoDependencia(newBeneficiario.getEstadoDependencia());
                     beneficiario.setFechaIngreso(newBeneficiario.getFechaIngreso());
-                    // Actualiza la foto solo si se envía un nuevo archivo
                     if (fotoFile != null && !fotoFile.isEmpty()) {
                         try {
                             beneficiario.setFoto(fotoFile.getBytes());
@@ -82,5 +81,21 @@ public class BeneficiarioController {
         }
         beneficiarioRepository.deleteById(id);
         return "El beneficiario con la cédula " + id + " ha sido borrado exitosamente";
+    }
+
+    @GetMapping("/Beneficiarios/search")
+    public List<Beneficiario> searchBeneficiario(@RequestParam(required = false) String cedula,
+                                                 @RequestParam(required = false) String nombre) {
+
+        if (cedula != null && !cedula.trim().isEmpty() && nombre != null && !nombre.trim().isEmpty()) {
+            throw new IllegalArgumentException("Solo se puede buscar por cédula o por nombre, no ambos.");
+        }
+        if (cedula != null && !cedula.trim().isEmpty()) {
+            return beneficiarioRepository.findByCedulaContaining(cedula);
+        }
+        if (nombre != null && !nombre.trim().isEmpty()) {
+            return beneficiarioRepository.findByNombreContainingIgnoreCase(nombre);
+        }
+        return beneficiarioRepository.findAll();
     }
 }

@@ -25,7 +25,6 @@ export default function AddBeneficiario() {
         observaciones: ""
     });
 
-    // Estado para el archivo de la foto
     const [foto, setFoto] = useState(null);
 
     const handleChange = (e) => {
@@ -35,19 +34,87 @@ export default function AddBeneficiario() {
         });
     };
 
-    // Para manejar el input file
     const handleFileChange = (e) => {
         setFoto(e.target.files[0]);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Creamos un objeto FormData para enviar datos como multipart/form-data
+
+        const regexSoloNumeros = /^\d+$/;
+        const regexSoloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+        const regexLetrasNumeros = /^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ\s]+$/;
+        const regexTelefono = /^[0-9\-\+\(\)\s]+$/;
+
+        if (!beneficiario.cedula || !regexSoloNumeros.test(beneficiario.cedula)) {
+            alert("La cédula debe contener solo números y no estar vacía.");
+            return;
+        }
+
+        if (!beneficiario.nombre || !regexSoloLetras.test(beneficiario.nombre)) {
+            alert("El nombre debe contener solo letras y no estar vacío.");
+            return;
+        }
+
+        if (!beneficiario.sexo) {
+            alert("Debe seleccionar una opción válida para Sexo.");
+            return;
+        }
+
+        if (!beneficiario.religion || !regexSoloLetras.test(beneficiario.religion)) {
+            alert("La religión debe contener solo letras y no estar vacía.");
+            return;
+        }
+
+        if (!beneficiario.gradoEscolaridad || !regexLetrasNumeros.test(beneficiario.gradoEscolaridad)) {
+            alert("La escolaridad debe contener una combinación de números y letras y no estar vacía.");
+            return;
+        }
+
+        if (!["DEPENDIENTE", "MODERADAMENTE_DEPENDIENTE", "INDEPENDIENTE"].includes(beneficiario.estadoDependencia)) {
+            alert("En dependencia se debe elegir entre DEPENDIENTE, MODERADAMENTE_DEPENDIENTE o INDEPENDIENTE.");
+            return;
+        }
+
+        if (!["ACTIVO", "INACTIVO"].includes(beneficiario.estado)) {
+            alert("El estado debe ser ACTIVO o INACTIVO.");
+            return;
+        }
+
+        if (!beneficiario.infoContacto) {
+            alert("La información de contacto no puede estar vacía.");
+            return;
+        }
+
+        if (!beneficiario.personaResponsable || !regexSoloLetras.test(beneficiario.personaResponsable)) {
+            alert("El responsable debe contener solo letras y no estar vacío.");
+            return;
+        }
+
+        if (!beneficiario.telefonoResponsable || !regexTelefono.test(beneficiario.telefonoResponsable)) {
+            alert("El teléfono del responsable debe contener solo números o caracteres especiales y no estar vacío.");
+            return;
+        }
+
+        if (!beneficiario.direccionResponsable) {
+            alert("La dirección del responsable no puede estar vacía.");
+            return;
+        }
+
+        if (!["JPS", "CONAPAM", "Otro"].includes(beneficiario.infoFinanciera)) {
+            alert("La información financiera debe ser JPS, CONAPAM u Otro.");
+            return;
+        }
+
+        if (!["No", "IVM", "RNC"].includes(beneficiario.pensionado)) {
+            alert("Pensionado debe ser No, IVM o RNC.");
+            return;
+        }
+
         const formData = new FormData();
         for (const key in beneficiario) {
             formData.append(key, beneficiario[key]);
         }
-        // Se envía el archivo con el nombre "fotoFile" para que coincida con el backend
         if (foto) {
             formData.append("fotoFile", foto);
         }
@@ -142,13 +209,17 @@ export default function AddBeneficiario() {
                     {/* Dependencia */}
                     <div className="col-md-6 mb-3">
                         <label>Dependencia</label>
-                        <input
-                            type="text"
+                        <select
                             className="form-control"
                             name="estadoDependencia"
                             value={beneficiario.estadoDependencia}
                             onChange={handleChange}
-                        />
+                        >
+                            <option value="">Seleccione</option>
+                            <option value="DEPENDIENTE">DEPENDIENTE</option>
+                            <option value="MODERADAMENTE_DEPENDIENTE">MODERADAMENTE_DEPENDIENTE</option>
+                            <option value="INDEPENDIENTE">INDEPENDIENTE</option>
+                        </select>
                     </div>
                     {/* Fecha de Ingreso */}
                     <div className="col-md-6 mb-3">
@@ -164,13 +235,16 @@ export default function AddBeneficiario() {
                     {/* Estado */}
                     <div className="col-md-6 mb-3">
                         <label>Estado</label>
-                        <input
-                            type="text"
+                        <select
                             className="form-control"
                             name="estado"
                             value={beneficiario.estado}
                             onChange={handleChange}
-                        />
+                        >
+                            <option value="">Seleccione</option>
+                            <option value="ACTIVO">ACTIVO</option>
+                            <option value="INACTIVO">INACTIVO</option>
+                        </select>
                     </div>
                     {/* Información de Contacto */}
                     <div className="col-md-12 mb-3">
@@ -219,13 +293,17 @@ export default function AddBeneficiario() {
                     {/* Información Financiera */}
                     <div className="col-md-4 mb-3">
                         <label>Info Financiera</label>
-                        <input
-                            type="text"
+                        <select
                             className="form-control"
                             name="infoFinanciera"
                             value={beneficiario.infoFinanciera}
                             onChange={handleChange}
-                        />
+                        >
+                            <option value="">Seleccione</option>
+                            <option value="JPS">JPS</option>
+                            <option value="CONAPAM">CONAPAM</option>
+                            <option value="Otro">Otro</option>
+                        </select>
                     </div>
                     {/* Pensionado */}
                     <div className="col-md-4 mb-3">
@@ -237,8 +315,9 @@ export default function AddBeneficiario() {
                             onChange={handleChange}
                         >
                             <option value="">Seleccione</option>
-                            <option value="Sí">Sí</option>
                             <option value="No">No</option>
+                            <option value="IVM">IVM</option>
+                            <option value="RNC">RNC</option>
                         </select>
                     </div>
                     {/* Presupuesto */}
