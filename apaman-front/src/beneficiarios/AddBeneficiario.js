@@ -25,6 +25,9 @@ export default function AddBeneficiario() {
         observaciones: ""
     });
 
+    // Estado para el archivo de la foto
+    const [foto, setFoto] = useState(null);
+
     const handleChange = (e) => {
         setBeneficiario({
             ...beneficiario,
@@ -32,10 +35,28 @@ export default function AddBeneficiario() {
         });
     };
 
+    // Para manejar el input file
+    const handleFileChange = (e) => {
+        setFoto(e.target.files[0]);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        // Creamos un objeto FormData para enviar datos como multipart/form-data
+        const formData = new FormData();
+        for (const key in beneficiario) {
+            formData.append(key, beneficiario[key]);
+        }
+        // Se envía el archivo con el nombre "fotoFile" para que coincida con el backend
+        if (foto) {
+            formData.append("fotoFile", foto);
+        }
         try {
-            await axios.post("http://localhost:8080/agregarBeneficiario", beneficiario);
+            await axios.post("http://localhost:8080/agregarBeneficiario", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            });
             navigate("/beneficiaries");
         } catch (error) {
             console.error("Error al agregar beneficiario", error);
@@ -47,6 +68,7 @@ export default function AddBeneficiario() {
             <h2>Agregar Beneficiario</h2>
             <form onSubmit={handleSubmit}>
                 <div className="row">
+                    {/* Cédula */}
                     <div className="col-md-6 mb-3">
                         <label>Cédula</label>
                         <input
@@ -58,6 +80,7 @@ export default function AddBeneficiario() {
                             required
                         />
                     </div>
+                    {/* Nombre */}
                     <div className="col-md-6 mb-3">
                         <label>Nombre</label>
                         <input
@@ -69,7 +92,7 @@ export default function AddBeneficiario() {
                             required
                         />
                     </div>
-
+                    {/* Sexo */}
                     <div className="col-md-4 mb-3">
                         <label>Sexo</label>
                         <select
@@ -83,7 +106,7 @@ export default function AddBeneficiario() {
                             <option value="F">Femenino</option>
                         </select>
                     </div>
-
+                    {/* Fecha de Nacimiento */}
                     <div className="col-md-4 mb-3">
                         <label>Fecha de Nacimiento</label>
                         <input
@@ -94,7 +117,7 @@ export default function AddBeneficiario() {
                             onChange={handleChange}
                         />
                     </div>
-
+                    {/* Religión */}
                     <div className="col-md-4 mb-3">
                         <label>Religión</label>
                         <input
@@ -105,7 +128,7 @@ export default function AddBeneficiario() {
                             onChange={handleChange}
                         />
                     </div>
-
+                    {/* Escolaridad */}
                     <div className="col-md-6 mb-3">
                         <label>Escolaridad</label>
                         <input
@@ -116,7 +139,7 @@ export default function AddBeneficiario() {
                             onChange={handleChange}
                         />
                     </div>
-
+                    {/* Dependencia */}
                     <div className="col-md-6 mb-3">
                         <label>Dependencia</label>
                         <input
@@ -127,7 +150,7 @@ export default function AddBeneficiario() {
                             onChange={handleChange}
                         />
                     </div>
-
+                    {/* Fecha de Ingreso */}
                     <div className="col-md-6 mb-3">
                         <label>Fecha de Ingreso</label>
                         <input
@@ -138,7 +161,7 @@ export default function AddBeneficiario() {
                             onChange={handleChange}
                         />
                     </div>
-
+                    {/* Estado */}
                     <div className="col-md-6 mb-3">
                         <label>Estado</label>
                         <input
@@ -149,7 +172,7 @@ export default function AddBeneficiario() {
                             onChange={handleChange}
                         />
                     </div>
-
+                    {/* Información de Contacto */}
                     <div className="col-md-12 mb-3">
                         <label>Información de Contacto</label>
                         <input
@@ -160,7 +183,7 @@ export default function AddBeneficiario() {
                             onChange={handleChange}
                         />
                     </div>
-
+                    {/* Persona Responsable */}
                     <div className="col-md-6 mb-3">
                         <label>Responsable</label>
                         <input
@@ -171,7 +194,7 @@ export default function AddBeneficiario() {
                             onChange={handleChange}
                         />
                     </div>
-
+                    {/* Teléfono Responsable */}
                     <div className="col-md-3 mb-3">
                         <label>Teléfono Responsable</label>
                         <input
@@ -182,7 +205,7 @@ export default function AddBeneficiario() {
                             onChange={handleChange}
                         />
                     </div>
-
+                    {/* Dirección Responsable */}
                     <div className="col-md-3 mb-3">
                         <label>Dirección Responsable</label>
                         <input
@@ -193,7 +216,7 @@ export default function AddBeneficiario() {
                             onChange={handleChange}
                         />
                     </div>
-
+                    {/* Información Financiera */}
                     <div className="col-md-4 mb-3">
                         <label>Info Financiera</label>
                         <input
@@ -204,7 +227,7 @@ export default function AddBeneficiario() {
                             onChange={handleChange}
                         />
                     </div>
-
+                    {/* Pensionado */}
                     <div className="col-md-4 mb-3">
                         <label>Pensionado</label>
                         <select
@@ -218,7 +241,7 @@ export default function AddBeneficiario() {
                             <option value="No">No</option>
                         </select>
                     </div>
-
+                    {/* Presupuesto */}
                     <div className="col-md-4 mb-3">
                         <label>Presupuesto</label>
                         <input
@@ -229,7 +252,7 @@ export default function AddBeneficiario() {
                             onChange={handleChange}
                         />
                     </div>
-
+                    {/* Observaciones */}
                     <div className="col-md-12 mb-3">
                         <label>Observaciones</label>
                         <textarea
@@ -240,8 +263,18 @@ export default function AddBeneficiario() {
                             onChange={handleChange}
                         />
                     </div>
+                    {/* Campo para subir la foto */}
+                    <div className="col-md-12 mb-3">
+                        <label>Foto</label>
+                        <input
+                            type="file"
+                            className="form-control"
+                            name="fotoFile"
+                            onChange={handleFileChange}
+                            accept="image/*"
+                        />
+                    </div>
                 </div>
-
                 <button type="submit" className="btn btn-primary">
                     Guardar
                 </button>

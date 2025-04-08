@@ -58,6 +58,7 @@ export default function Beneficiarios() {
                         <th>Pensionado</th>
                         <th>Presupuesto</th>
                         <th>Observaciones</th>
+                        <th>Foto</th>
                         <th>Acciones</th>
                     </tr>
                     </thead>
@@ -84,13 +85,23 @@ export default function Beneficiarios() {
                             <td>{b.presupuesto}</td>
                             <td>{b.observaciones}</td>
                             <td>
+                                {b.foto ? (
+                                    <img
+                                        src={`data:image/jpeg;base64,${b.foto}`}
+                                        alt="Foto del beneficiario"
+                                        style={{ width: '100px', height: 'auto' }}
+                                    />
+                                ) : (
+                                    "Sin foto"
+                                )}
+                            </td>
+                            <td>
                                 <button
                                     className="btn btn-primary mx-2"
                                     onClick={() => navigate(`/beneficiaries/view/${b.cedula}`)}
                                 >
                                     Ver
                                 </button>
-
                                 <button
                                     className="btn btn-outline-primary mx-2"
                                     onClick={() => navigate(`/beneficiaries/edit/${b.cedula}`)}
