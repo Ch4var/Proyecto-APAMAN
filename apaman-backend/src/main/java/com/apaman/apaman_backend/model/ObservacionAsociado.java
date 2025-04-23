@@ -10,14 +10,14 @@ import lombok.*;
 @AllArgsConstructor
 public class ObservacionAsociado {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(columnDefinition = "TEXT", nullable = false)
+  
+    @Column(name = "contenido", columnDefinition = "TEXT", nullable = false)
     private String observacion;
-
+  
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cedula_asociado", nullable = false)
+    @JoinColumn(name = "asociado_cedula", nullable = false)
     private Asociado asociado;
-}
+  
+  }
