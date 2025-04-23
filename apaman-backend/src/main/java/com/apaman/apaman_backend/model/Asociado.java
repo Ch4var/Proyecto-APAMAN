@@ -3,7 +3,6 @@ package com.apaman.apaman_backend.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,10 +26,26 @@ public class Asociado {
     @Size(max = 100)
     private String nombre;
 
+    @Column(name = "apellido_1", nullable = false, length = 20)
+    @NotBlank
+    @Size(max = 20)
+    private String apellido1;
+
+    @Column(name = "apellido_2", nullable = false, length = 20)
+    @NotBlank
+    @Size(max = 20)
+    private String apellido2;
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 5)
+    @Column(nullable = false)
     @NotNull
     private Sexo sexo;
+
+    public enum Sexo {
+        Masculino,
+        Femenina,
+        Otro
+    }
 
     @Column(name = "fecha_nacimiento", nullable = false)
     @NotNull
@@ -49,20 +64,6 @@ public class Asociado {
     @Column(name = "fecha_asociacion", nullable = false)
     @NotNull
     private LocalDate fechaAsociacion;
-
-    @Column(name = "fecha_sesion", nullable = false)
-    @NotNull
-    private LocalDate fechaSesion;
-
-    @Column(name = "num_acta", nullable = false, length = 20)
-    @NotBlank
-    @Size(max = 20)
-    private String numActa;
-
-    @Column(name = "num_acuerdo", nullable = false, length = 20)
-    @NotBlank
-    @Size(max = 20)
-    private String numAcuerdo;
 
     @Column(name = "cuota_mensual", nullable = false, precision = 10, scale = 2)
     @NotNull
@@ -99,15 +100,11 @@ public class Asociado {
     private String direccion;
 
     @OneToMany(mappedBy = "asociado", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<ObservacionAsociado> observaciones = new ArrayList<>();
+    private List<Observacion> observaciones = new ArrayList<>();
 
     @OneToMany(mappedBy = "asociado", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ReferenteAsociado> referentes = new ArrayList<>();
 
     @OneToMany(mappedBy = "referente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ReferenteAsociado> asociadosReferidos = new ArrayList<>();
-
-    public enum Sexo {
-        M, F, Otro
-    }
 }
