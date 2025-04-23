@@ -7,27 +7,19 @@ USE APAMAN_BD;
 -- =====================================================
 
 -- -----------------------------------------------------
--- Drops de Tablas
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `observacion_asociado`;
-DROP TABLE IF EXISTS `referente_asociado`;
-DROP TABLE IF EXISTS `asociado`;
-
--- -----------------------------------------------------
 -- Tabla `asociado`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `asociado` (
-  `cedula` VARCHAR(20) NOT NULL,
-  `nombre` VARCHAR(100) NOT NULL,
-  `sexo` ENUM('M', 'F', 'Otro') NOT NULL,
+  `cedula` INT NOT NULL,
+  `nombre` VARCHAR(20) NOT NULL,
+  `apellido_1` VARCHAR(20) NOT NULL,
+  `apellido_2` VARCHAR(20) NOT NULL,
+  `sexo` ENUM('Masculino', 'Femenina', 'Otro') NOT NULL,
   `fecha_nacimiento` DATE NOT NULL,
   `edad` INT NOT NULL,
   `estado` BOOLEAN DEFAULT TRUE,
   
   `fecha_asociacion` DATE NOT NULL,
-  `fecha_sesion` DATE NOT NULL,
-  `num_acta` VARCHAR(20) NOT NULL,
-  `num_acuerdo` VARCHAR(20) NOT NULL,
   
   `cuota_mensual` DECIMAL(10,2) NOT NULL,
   `estado_morosidad` BOOLEAN DEFAULT FALSE,
@@ -35,57 +27,49 @@ CREATE TABLE IF NOT EXISTS `asociado` (
   `cantidad_adeudo` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
   
   `correo` VARCHAR(100) NOT NULL,
-  `telefono` VARCHAR(20) NOT NULL,
-  `direccion` TEXT NOT NULL,
+  `telefono` INT NOT NULL,
+  `direccion` VARCHAR(200) NOT NULL,
   
   PRIMARY KEY (`cedula`)
 );
-  
+
 -- -----------------------------------------------------
--- Tabla `referente_asociado`
+-- Tabla `acta_asociado`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `referente_asociado` (
+CREATE TABLE IF NOT EXISTS `acta_asociado` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `asociado_cedula` VARCHAR(20) NOT NULL,
-  `referente_cedula` VARCHAR(20) NOT NULL,
+  `fecha_sesion` DATE NOT NULL,
+  `num_acta` VARCHAR(20) NOT NULL,
+  `num_acuerdo` VARCHAR(20) NOT NULL,
   
-  PRIMARY KEY (`id`),
-  INDEX `asociado_cedula` (`asociado_cedula` ASC) VISIBLE,
-  INDEX `referente_cedula` (`referente_cedula` ASC) VISIBLE,
-  CONSTRAINT `referente_asociado_ibfk_1`
-    FOREIGN KEY (`asociado_cedula`)
-    REFERENCES `asociado` (`cedula`),
-  CONSTRAINT `referente_asociado_ibfk_2`
-    FOREIGN KEY (`referente_cedula`)
-    REFERENCES `asociado` (`cedula`)
+  PRIMARY KEY (`id`)
 );
 
 -- -----------------------------------------------------
--- Tabla `observacion_asociado`
+-- Tabla `referente_asociado`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `observacion_asociado` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `asociado_cedula` VARCHAR(20) NOT NULL,
-  `fecha` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `contenido` TEXT NOT NULL,
+CREATE TABLE referente_asociado (
+  id                INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  asociado_cedula   INT NOT NULL,
+  referente_cedula  INT NOT NULL,
   
-  PRIMARY KEY (`id`),
-  INDEX `asociado_cedula` (`asociado_cedula` ASC) VISIBLE,
-  CONSTRAINT `observacion_asociado_ibfk_1`
-    FOREIGN KEY (`asociado_cedula`)
-    REFERENCES `apaman_bd`.`asociado` (`cedula`)
+  INDEX idx_asoc_ced (asociado_cedula),
+  INDEX idx_refe_ced (referente_cedula),
+  
+  CONSTRAINT referente_asociado_ibfk_1
+    FOREIGN KEY (asociado_cedula)
+    REFERENCES asociado(cedula)
+    ON DELETE CASCADE,
+  CONSTRAINT referente_asociado_ibfk_2
+    FOREIGN KEY (referente_cedula)
+    REFERENCES asociado(cedula)
+    ON DELETE CASCADE
 );
+
 
 -- =====================================================
 -- Seccion Beneficiarios
 -- =====================================================
-
--- -----------------------------------------------------
--- Drops de Tablas
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `observacion_beneficiario`;
-DROP TABLE IF EXISTS `beneficiario`;
-DROP TABLE IF EXISTS `fondo`;
 
 -- -----------------------------------------------------
 -- Tabla `fondo`
@@ -93,7 +77,19 @@ DROP TABLE IF EXISTS `fondo`;
 CREATE TABLE IF NOT EXISTS `fondo` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `tipo` ENUM('Familiar', 'CONAPAM', 'Junta Protección Social') NOT NULL,
-  `descripcion` TEXT NOT NULL,
+  `comentario` VARCHAR(200) NOT NULL,
+  `monto` DECIMAL(10,2) NOT NULL,
+  
+  PRIMARY KEY (`id`)
+);
+
+-- -----------------------------------------------------
+-- Tabla `pension`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pension` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `tipo` ENUM('RNC', 'IVM'),
+  `comentario` VARCHAR(200) NOT NULL,
   `monto` DECIMAL(10,2) NOT NULL,
   
   PRIMARY KEY (`id`)
@@ -103,24 +99,27 @@ CREATE TABLE IF NOT EXISTS `fondo` (
 -- Tabla `beneficiario`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `beneficiario` (
-  `cedula` VARCHAR(20) NOT NULL,
-  `nombre` VARCHAR(100) NOT NULL,
-  `sexo` ENUM('M', 'F', 'Otro') NOT NULL,
+  `cedula` INT NOT NULL,
+  `nombre` VARCHAR(20) NOT NULL,
+  `apellido_1` VARCHAR(20) NOT NULL,
+  `apellido_2` VARCHAR(20) NOT NULL,
+  `sexo` ENUM('Masculino', 'Femenina', 'Otro') NOT NULL,
   `fecha_nacimiento` DATE NOT NULL,
   `edad` INT NOT NULL,
-  `religion` VARCHAR(50) NOT NULL,
-  `escolaridad` VARCHAR(100) NOT NULL,
+  `religion` ENUM('Cristianismo Católico', 'Cristianismo Protestante', 'Budaísmo', 'Judaísmo', 'Islam', 'Otro') NOT NULL,
+  `escolaridad` ENUM('Ninguno', 'Preescolar', 'Primaria', 'Secundaria', 'Educación Superior') NOT NULL,
   `estado_dependencia` ENUM('Dependiente', 'Moderadamente Dependiente', 'Independiente') NOT NULL,
   `fecha_ingreso` DATE NOT NULL,
-  `foto` VARCHAR(2000) NOT NULL, -- OTRA OPCION POSIBLE: USAR LONGBLOB
+  `foto` LONGBLOB,
   `estado` BOOLEAN DEFAULT TRUE,
   
-  `responsable_nombre` VARCHAR(100) NOT NULL,
-  `responsable_telefono` VARCHAR(20) NOT NULL,
-  `responsable_direccion` TEXT NOT NULL,
+  `responsable_nombre` VARCHAR(20) NOT NULL,
+  `responsable_apellido_1` VARCHAR(20) NOT NULL,
+  `responsable_apellido_2` VARCHAR(20) NOT NULL,
+  `responsable_telefono` INT NOT NULL,
+  `responsable_direccion` VARCHAR(200) NOT NULL,
   
-  `pensionado` BOOLEAN DEFAULT FALSE,
-  `tipo_pension` ENUM('RNC', 'IVM'),
+  `id_pension` INT NOT NULL,
   `id_fondo` INT NOT NULL,
   `presupuesto` DECIMAL(10,2) NOT NULL,
   
@@ -128,48 +127,59 @@ CREATE TABLE IF NOT EXISTS `beneficiario` (
   INDEX `id_fondo` (`id_fondo` ASC) VISIBLE,
   CONSTRAINT `beneficiario_ibfk_1`
     FOREIGN KEY (`id_fondo`)
-    REFERENCES `fondo` (`id`)
+    REFERENCES `fondo` (`id`),
+  CONSTRAINT `beneficiario_ibfk_2`
+    FOREIGN KEY (`id_pension`)
+    REFERENCES `pension` (`id`)
 );
 
 -- -----------------------------------------------------
--- Tabla `observacion_beneficiario`
+-- Tabla `observacion`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `observacion_beneficiario` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `beneficiario_cedula` VARCHAR(20) NOT NULL,
-  `fecha` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `contenido` TEXT NOT NULL,
+CREATE TABLE IF NOT EXISTS observacion (
+  id                   INT            NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  asociado_cedula      INT            NULL,
+  beneficiario_cedula  INT            NULL,
+  fecha                TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  contenido            VARCHAR(200)   NULL,
   
-  PRIMARY KEY (`id`),
-  INDEX `beneficiario_cedula` (`beneficiario_cedula` ASC) VISIBLE,
-  CONSTRAINT `observacion_beneficiario_ibfk_1`
-    FOREIGN KEY (`beneficiario_cedula`)
-    REFERENCES `apaman_bd`.`beneficiario` (`cedula`)
+  INDEX idx_obs_asoc   (asociado_cedula),
+  INDEX idx_obs_bene   (beneficiario_cedula),
+  
+  CONSTRAINT fk_obs_asoc FOREIGN KEY (asociado_cedula)
+    REFERENCES asociado(cedula)
+    ON DELETE CASCADE,
+    
+  CONSTRAINT fk_obs_bene FOREIGN KEY (beneficiario_cedula)
+    REFERENCES beneficiario(cedula)
+    ON DELETE CASCADE,
+    
+  CHECK (
+    (asociado_cedula IS NOT NULL AND beneficiario_cedula IS NULL)
+    OR
+    (asociado_cedula IS NULL  AND beneficiario_cedula IS NOT NULL)
+  )
 );
+
 
 -- =====================================================
 -- Seccion Usuarios
 -- =====================================================
 
 -- -----------------------------------------------------
--- Drops de Tablas
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `usuario`;
-
--- -----------------------------------------------------
 -- Table `usuario`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `usuario` (
-  `idusuario` INT NOT NULL AUTO_INCREMENT,
+  `id_usuario` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(45) NOT NULL,
   `correo` VARCHAR(45) NOT NULL,
   `cedula` VARCHAR(20) NULL,
   `contraseña` VARCHAR(45) NOT NULL,
   
-  PRIMARY KEY (`idusuario`),
+  PRIMARY KEY (`id_usuario`),
   UNIQUE INDEX `contraseña_UNIQUE` (`contraseña` ASC) VISIBLE,
   UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE,
-  UNIQUE INDEX `idusuario_UNIQUE` (`idusuario` ASC) VISIBLE
+  UNIQUE INDEX `id_usuario_UNIQUE` (`id_usuario` ASC) VISIBLE
 );
 
 -- Habilitar eventos (si no lo están)
