@@ -30,19 +30,17 @@ public class AsociadoServiceImpl implements AsociadoService {
     public Asociado updateAsociado(String cedula, Asociado updated) {
         Asociado existing = repository.findById(cedula)
                 .orElseThrow(() -> new IllegalArgumentException("Asociado no encontrado"));
-
-        // Actualizar campos
+        // Actualizar campos básicos
         existing.setNombre(updated.getNombre());
+        existing.setApellido1(updated.getApellido1());
+        existing.setApellido2(updated.getApellido2());
         existing.setSexo(updated.getSexo());
         existing.setFechaNacimiento(updated.getFechaNacimiento());
         existing.setFechaAsociacion(updated.getFechaAsociacion());
-        existing.setFechaSesion(updated.getFechaSesion());
-        existing.setNumActa(updated.getNumActa());
-        existing.setNumAcuerdo(updated.getNumAcuerdo());
         existing.setCuotaMensual(updated.getCuotaMensual());
         existing.setEstado(updated.getEstado());
 
-        // Morosidad: si cambió a no moroso, resetear adeudos
+        // Morosidad
         if (existing.getEstadoMorosidad() && !updated.getEstadoMorosidad()) {
             updated.setMesesAdeudo(0);
             updated.setCantidadAdeudo(BigDecimal.ZERO);
@@ -55,9 +53,7 @@ public class AsociadoServiceImpl implements AsociadoService {
         existing.setTelefono(updated.getTelefono());
         existing.setDireccion(updated.getDireccion());
 
-        // Recalcular edad
         actualizarEdad(existing);
-
         return repository.save(existing);
     }
 
@@ -77,7 +73,33 @@ public class AsociadoServiceImpl implements AsociadoService {
         repository.deleteById(cedula);
     }
 
-    // Lógica de negocio: calcular edad
+    @Override
+    public List<Asociado> searchAsociados(String cedula, String nombre, boolean partial) {
+        boolean hasCedula = cedula != null && !cedula.isBlank();
+        boolean hasNombre = nombre != null && !nombre.isBlank();
+        if (!hasCedula && !hasNombre) {
+            return getAllAsociados();
+        }
+        if (partial) {
+            if (hasCedula && hasNombre) {
+                return repository.partial(cedula, nombre);
+            } else if (hasCedula) {
+                return repository.partialByCedula(cedula);
+            } else {
+                return repository.partialByNombre(nombre);
+            }
+        } else {
+            if (hasCedula && hasNombre) {
+                return repository.exact(cedula, nombre);
+            } else if (hasCedula) {
+                return repository.exactByCedula(cedula);
+            } else {
+                return repository.exactByNombre(nombre);
+            }
+        }
+    }
+
+    // Recalcular edad basada en fecha de nacimiento
     private void actualizarEdad(Asociado a) {
         if (a.getFechaNacimiento() != null) {
             int years = Period.between(a.getFechaNacimiento(), LocalDate.now()).getYears();

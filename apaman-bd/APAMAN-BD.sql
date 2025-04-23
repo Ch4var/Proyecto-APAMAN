@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `beneficiario` (
   `escolaridad` ENUM('Ninguno', 'Preescolar', 'Primaria', 'Secundaria', 'Educación Superior') NOT NULL,
   `estado_dependencia` ENUM('Dependiente', 'Moderadamente Dependiente', 'Independiente') NOT NULL,
   `fecha_ingreso` DATE NOT NULL,
-  `foto` LONGBLOB,
+  `foto` BLOB,
   `estado` BOOLEAN DEFAULT TRUE,
   
   `responsable_nombre` VARCHAR(20) NOT NULL,
