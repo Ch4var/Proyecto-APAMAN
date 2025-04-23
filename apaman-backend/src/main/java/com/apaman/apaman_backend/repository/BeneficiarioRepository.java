@@ -6,9 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
+public interface BeneficiarioRepository extends JpaRepository<Beneficiario, Integer> {
+    Optional<Beneficiario> findByCedula(Integer cedula);
 
-public interface BeneficiarioRepository extends JpaRepository<Beneficiario, Long> {
     @Query("SELECT b FROM Beneficiario b WHERE CONCAT('', b.cedula) LIKE %:cedula%")
     List<Beneficiario> findByCedulaContaining(@Param("cedula") String cedula);
 

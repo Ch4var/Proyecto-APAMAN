@@ -1,7 +1,7 @@
 package com.apaman.apaman_backend.model;
 
 public enum Dependencia {
-    DEPENDIENTE,
+    Dependiente,
     MODERADAMENTE_DEPENDIENTE,
-    INDEPENDIENTE
+    Independiente
 }

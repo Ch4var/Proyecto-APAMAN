@@ -8,21 +8,23 @@ export default function AddBeneficiario() {
     const [beneficiario, setBeneficiario] = useState({
         cedula: "",
         nombre: "",
+        apellido1: "",
+        apellido2: "",
         sexo: "",
         fechaNacimiento: "",
         religion: "",
-        gradoEscolaridad: "",
+        escolaridad: "",
         estadoDependencia: "",
         fechaIngreso: "",
-        estado: "",
-        infoContacto: "",
-        personaResponsable: "",
-        telefonoResponsable: "",
-        direccionResponsable: "",
-        infoFinanciera: "",
-        pensionado: "",
-        presupuesto: "",
-        observaciones: ""
+        estado: "true",          // true = Activo, false = Inactivo
+        responsableNombre: "",
+        responsableApellido1: "",
+        responsableApellido2: "",
+        responsableTelefono: "",
+        responsableDireccion: "",
+        idFondo: "",
+        idPension: "",
+        presupuesto: ""
     });
 
     const [foto, setFoto] = useState(null);
@@ -41,92 +43,106 @@ export default function AddBeneficiario() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const regexSoloNumeros = /^\d+$/;
-        const regexSoloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
-        const regexLetrasNumeros = /^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ\s]+$/;
-        const regexTelefono = /^[0-9\-\+\(\)\s]+$/;
+        // Validaciones básicas
+        const onlyNums = /^\d+$/;
+        const onlyLetters = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+        const phoneRe = /^[0-9\-\+\(\)\s]+$/;
 
-        if (!beneficiario.cedula || !regexSoloNumeros.test(beneficiario.cedula)) {
-            alert("La cédula debe contener solo números y no estar vacía.");
+        if (!onlyNums.test(beneficiario.cedula)) {
+            alert("Cédula inválida (solo números).");
             return;
         }
-
-        if (!beneficiario.nombre || !regexSoloLetras.test(beneficiario.nombre)) {
-            alert("El nombre debe contener solo letras y no estar vacío.");
+        if (!onlyLetters.test(beneficiario.nombre) || !onlyLetters.test(beneficiario.apellido1) || !onlyLetters.test(beneficiario.apellido2)) {
+            alert("Nombre y apellidos deben contener solo letras.");
             return;
         }
-
-        if (!beneficiario.sexo) {
-            alert("Debe seleccionar una opción válida para Sexo.");
+        if (!["Masculino","Femenina","Otro"].includes(beneficiario.sexo)) {
+            alert("Seleccione un Sexo válido.");
             return;
         }
-
-        if (!beneficiario.religion || !regexSoloLetras.test(beneficiario.religion)) {
-            alert("La religión debe contener solo letras y no estar vacía.");
+        if (!beneficiario.fechaNacimiento) {
+            alert("Fecha de nacimiento requerida.");
             return;
         }
-
-        if (!beneficiario.gradoEscolaridad || !regexLetrasNumeros.test(beneficiario.gradoEscolaridad)) {
-            alert("La escolaridad debe contener una combinación de números y letras y no estar vacía.");
+        if (![
+            "Cristianismo_Católico",
+            "Cristianismo_Protestante",
+            "Budaísmo",
+            "Judaísmo",
+            "Islam",
+            "Otro"
+        ].includes(beneficiario.religion)) {
+            alert("Seleccione una Religión válida.");
             return;
         }
-
-        if (!["DEPENDIENTE", "MODERADAMENTE_DEPENDIENTE", "INDEPENDIENTE"].includes(beneficiario.estadoDependencia)) {
-            alert("En dependencia se debe elegir entre DEPENDIENTE, MODERADAMENTE_DEPENDIENTE o INDEPENDIENTE.");
+        if (![
+            "Ninguno",
+            "Preescolar",
+            "Primaria",
+            "Secundaria",
+            "Educación_Superior"
+        ].includes(beneficiario.escolaridad)) {
+            alert("Seleccione una Escolaridad válida.");
             return;
         }
-
-        if (!["ACTIVO", "INACTIVO"].includes(beneficiario.estado)) {
-            alert("El estado debe ser ACTIVO o INACTIVO.");
+        if (!["Dependiente","Moderadamente Dependiente","Independiente"].includes(beneficiario.estadoDependencia)) {
+            alert("Seleccione un Estado de Dependencia válido.");
             return;
         }
-
-        if (!beneficiario.infoContacto) {
-            alert("La información de contacto no puede estar vacía.");
+        if (!beneficiario.fechaIngreso) {
+            alert("Fecha de ingreso requerida.");
             return;
         }
-
-        if (!beneficiario.personaResponsable || !regexSoloLetras.test(beneficiario.personaResponsable)) {
-            alert("El responsable debe contener solo letras y no estar vacío.");
+        if (!["true","false"].includes(beneficiario.estado)) {
+            alert("Seleccione Estado Activo/Inactivo.");
             return;
         }
-
-        if (!beneficiario.telefonoResponsable || !regexTelefono.test(beneficiario.telefonoResponsable)) {
-            alert("El teléfono del responsable debe contener solo números o caracteres especiales y no estar vacío.");
+        if (!onlyLetters.test(beneficiario.responsableNombre)
+            || !onlyLetters.test(beneficiario.responsableApellido1)
+            || !onlyLetters.test(beneficiario.responsableApellido2)) {
+            alert("Datos del responsable deben contener solo letras.");
             return;
         }
-
-        if (!beneficiario.direccionResponsable) {
-            alert("La dirección del responsable no puede estar vacía.");
+        if (!phoneRe.test(beneficiario.responsableTelefono)) {
+            alert("Teléfono del responsable inválido.");
             return;
         }
-
-        if (!["JPS", "CONAPAM", "Otro"].includes(beneficiario.infoFinanciera)) {
-            alert("La información financiera debe ser JPS, CONAPAM u Otro.");
+        if (!beneficiario.responsableDireccion) {
+            alert("Dirección del responsable requerida.");
             return;
         }
-
-        if (!["No", "IVM", "RNC"].includes(beneficiario.pensionado)) {
-            alert("Pensionado debe ser No, IVM o RNC.");
+        if (!onlyNums.test(beneficiario.idFondo)) {
+            alert("Seleccione un Fondo válido.");
+            return;
+        }
+        if (!onlyNums.test(beneficiario.idPension)) {
+            alert("Seleccione una Pensión válida.");
+            return;
+        }
+        if (isNaN(parseFloat(beneficiario.presupuesto))) {
+            alert("Presupuesto inválido.");
             return;
         }
 
         const formData = new FormData();
-        for (const key in beneficiario) {
-            formData.append(key, beneficiario[key]);
-        }
+        Object.entries(beneficiario).forEach(([key, val]) => {
+            formData.append(key, val);
+        });
         if (foto) {
             formData.append("fotoFile", foto);
         }
+
         try {
-            await axios.post("http://localhost:8080/agregarBeneficiario", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
-            });
-            navigate("/beneficiaries");
+            await axios.post(
+                "http://localhost:8080/beneficiarios?idFondo=" + beneficiario.idFondo +
+                "&idPension=" + beneficiario.idPension,
+                formData,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
+            navigate("/beneficiarios");
         } catch (error) {
             console.error("Error al agregar beneficiario", error);
+            alert("Ocurrió un error al guardar el beneficiario.");
         }
     };
 
@@ -159,6 +175,29 @@ export default function AddBeneficiario() {
                             required
                         />
                     </div>
+                    {/* Apellidos */}
+                    <div className="col-md-3 mb-3">
+                        <label>Apellido 1</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            name="apellido1"
+                            value={beneficiario.apellido1}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div className="col-md-3 mb-3">
+                        <label>Apellido 2</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            name="apellido2"
+                            value={beneficiario.apellido2}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
                     {/* Sexo */}
                     <div className="col-md-4 mb-3">
                         <label>Sexo</label>
@@ -167,10 +206,12 @@ export default function AddBeneficiario() {
                             name="sexo"
                             value={beneficiario.sexo}
                             onChange={handleChange}
+                            required
                         >
                             <option value="">Seleccione</option>
-                            <option value="M">Masculino</option>
-                            <option value="F">Femenino</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenina">Femenina</option>
+                            <option value="Otro">Otro</option>
                         </select>
                     </div>
                     {/* Fecha de Nacimiento */}
@@ -182,29 +223,45 @@ export default function AddBeneficiario() {
                             name="fechaNacimiento"
                             value={beneficiario.fechaNacimiento}
                             onChange={handleChange}
+                            required
                         />
                     </div>
                     {/* Religión */}
                     <div className="col-md-4 mb-3">
                         <label>Religión</label>
-                        <input
-                            type="text"
+                        <select
                             className="form-control"
                             name="religion"
                             value={beneficiario.religion}
                             onChange={handleChange}
-                        />
+                            required
+                        >
+                            <option value="">Seleccione</option>
+                            <option value="Cristianismo_Católico">Cristianismo Católico</option>
+                            <option value="Cristianismo_Protestante">Cristianismo Protestante</option>
+                            <option value="Budaísmo">Budaísmo</option>
+                            <option value="Judaísmo">Judaísmo</option>
+                            <option value="Islam">Islam</option>
+                            <option value="Otro">Otro</option>
+                        </select>
                     </div>
                     {/* Escolaridad */}
                     <div className="col-md-6 mb-3">
                         <label>Escolaridad</label>
-                        <input
-                            type="text"
+                        <select
                             className="form-control"
-                            name="gradoEscolaridad"
-                            value={beneficiario.gradoEscolaridad}
+                            name="escolaridad"
+                            value={beneficiario.escolaridad}
                             onChange={handleChange}
-                        />
+                            required
+                        >
+                            <option value="">Seleccione</option>
+                            <option value="Ninguno">Ninguno</option>
+                            <option value="Preescolar">Preescolar</option>
+                            <option value="Primaria">Primaria</option>
+                            <option value="Secundaria">Secundaria</option>
+                            <option value="Educación_Superior">Educación Superior</option>
+                        </select>
                     </div>
                     {/* Dependencia */}
                     <div className="col-md-6 mb-3">
@@ -214,11 +271,12 @@ export default function AddBeneficiario() {
                             name="estadoDependencia"
                             value={beneficiario.estadoDependencia}
                             onChange={handleChange}
+                            required
                         >
                             <option value="">Seleccione</option>
-                            <option value="DEPENDIENTE">DEPENDIENTE</option>
-                            <option value="MODERADAMENTE_DEPENDIENTE">MODERADAMENTE_DEPENDIENTE</option>
-                            <option value="INDEPENDIENTE">INDEPENDIENTE</option>
+                            <option value="Dependiente">Dependiente</option>
+                            <option value="Moderadamente Dependiente">Moderadamente Dependiente</option>
+                            <option value="Independiente">Independiente</option>
                         </select>
                     </div>
                     {/* Fecha de Ingreso */}
@@ -230,6 +288,7 @@ export default function AddBeneficiario() {
                             name="fechaIngreso"
                             value={beneficiario.fechaIngreso}
                             onChange={handleChange}
+                            required
                         />
                     </div>
                     {/* Estado */}
@@ -241,109 +300,114 @@ export default function AddBeneficiario() {
                             value={beneficiario.estado}
                             onChange={handleChange}
                         >
-                            <option value="">Seleccione</option>
-                            <option value="ACTIVO">ACTIVO</option>
-                            <option value="INACTIVO">INACTIVO</option>
+                            <option value="true">Activo</option>
+                            <option value="false">Inactivo</option>
                         </select>
                     </div>
-                    {/* Información de Contacto */}
-                    <div className="col-md-12 mb-3">
-                        <label>Información de Contacto</label>
+                    {/* Responsable */}
+                    <div className="col-md-4 mb-3">
+                        <label>Nombre Responsable</label>
                         <input
                             type="text"
                             className="form-control"
-                            name="infoContacto"
-                            value={beneficiario.infoContacto}
+                            name="responsableNombre"
+                            value={beneficiario.responsableNombre}
                             onChange={handleChange}
+                            required
                         />
                     </div>
-                    {/* Persona Responsable */}
-                    <div className="col-md-6 mb-3">
-                        <label>Responsable</label>
+                    <div className="col-md-4 mb-3">
+                        <label>Apellido1 Responsable</label>
                         <input
                             type="text"
                             className="form-control"
-                            name="personaResponsable"
-                            value={beneficiario.personaResponsable}
+                            name="responsableApellido1"
+                            value={beneficiario.responsableApellido1}
                             onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div className="col-md-4 mb-3">
+                        <label>Apellido2 Responsable</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            name="responsableApellido2"
+                            value={beneficiario.responsableApellido2}
+                            onChange={handleChange}
+                            required
                         />
                     </div>
                     {/* Teléfono Responsable */}
-                    <div className="col-md-3 mb-3">
+                    <div className="col-md-6 mb-3">
                         <label>Teléfono Responsable</label>
                         <input
                             type="text"
                             className="form-control"
-                            name="telefonoResponsable"
-                            value={beneficiario.telefonoResponsable}
+                            name="responsableTelefono"
+                            value={beneficiario.responsableTelefono}
                             onChange={handleChange}
+                            required
                         />
                     </div>
                     {/* Dirección Responsable */}
-                    <div className="col-md-3 mb-3">
+                    <div className="col-md-6 mb-3">
                         <label>Dirección Responsable</label>
                         <input
                             type="text"
                             className="form-control"
-                            name="direccionResponsable"
-                            value={beneficiario.direccionResponsable}
+                            name="responsableDireccion"
+                            value={beneficiario.responsableDireccion}
                             onChange={handleChange}
+                            required
                         />
                     </div>
-                    {/* Información Financiera */}
-                    <div className="col-md-4 mb-3">
-                        <label>Info Financiera</label>
+                    {/* Selección de Fondo */}
+                    <div className="col-md-6 mb-3">
+                        <label>Fondo</label>
                         <select
                             className="form-control"
-                            name="infoFinanciera"
-                            value={beneficiario.infoFinanciera}
+                            name="idFondo"
+                            value={beneficiario.idFondo}
                             onChange={handleChange}
+                            required
                         >
                             <option value="">Seleccione</option>
-                            <option value="JPS">JPS</option>
-                            <option value="CONAPAM">CONAPAM</option>
-                            <option value="Otro">Otro</option>
+                            <option value="1">Familiar</option>
+                            <option value="2">CONAPAM</option>
+                            <option value="3">Junta Protección Social</option>
                         </select>
                     </div>
-                    {/* Pensionado */}
-                    <div className="col-md-4 mb-3">
-                        <label>Pensionado</label>
+                    {/* Selección de Pensión */}
+                    <div className="col-md-6 mb-3">
+                        <label>Pensión</label>
                         <select
                             className="form-control"
-                            name="pensionado"
-                            value={beneficiario.pensionado}
+                            name="idPension"
+                            value={beneficiario.idPension}
                             onChange={handleChange}
+                            required
                         >
                             <option value="">Seleccione</option>
-                            <option value="No">No</option>
-                            <option value="IVM">IVM</option>
-                            <option value="RNC">RNC</option>
+                            <option value="1">RNC</option>
+                            <option value="2">IVM</option>
                         </select>
                     </div>
                     {/* Presupuesto */}
-                    <div className="col-md-4 mb-3">
+                    <div className="col-md-6 mb-3">
                         <label>Presupuesto</label>
                         <input
                             type="number"
+                            step="0.01"
                             className="form-control"
                             name="presupuesto"
                             value={beneficiario.presupuesto}
                             onChange={handleChange}
+                            required
                         />
                     </div>
-                    {/* Observaciones */}
-                    <div className="col-md-12 mb-3">
-                        <label>Observaciones</label>
-                        <textarea
-                            className="form-control"
-                            name="observaciones"
-                            rows="3"
-                            value={beneficiario.observaciones}
-                            onChange={handleChange}
-                        />
-                    </div>
-                    {/* Campo para subir la foto */}
-                    <div className="col-md-12 mb-3">
+                    {/* Foto */}
+                    <div className="col-md-6 mb-3">
                         <label>Foto</label>
                         <input
                             type="file"
@@ -360,7 +424,7 @@ export default function AddBeneficiario() {
                 <button
                     type="button"
                     className="btn btn-secondary ms-2"
-                    onClick={() => navigate("/beneficiaries")}
+                    onClick={() => navigate("/beneficiarios")}
                 >
                     Cancelar
                 </button>

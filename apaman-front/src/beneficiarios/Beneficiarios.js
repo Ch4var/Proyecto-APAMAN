@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from "axios";
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 export default function Beneficiarios() {
@@ -12,16 +12,27 @@ export default function Beneficiarios() {
 
     const loadBeneficiarios = async () => {
         try {
-            const result = await axios.get("http://localhost:8080/Beneficiarios");
+            const result = await axios.get('http://localhost:8080/beneficiarios');
             setBeneficiarios(result.data);
         } catch (error) {
-            console.error("Error cargando beneficiarios", error);
+            console.error('Error cargando beneficiarios', error);
         }
     };
 
-    const deleteBeneficiario = async (id) => {
-        await axios.delete(`http://localhost:8080/Beneficiario/${id}`)
-    }
+    const deleteBeneficiario = async (cedula) => {
+        try {
+            await axios.delete(`http://localhost:8080/beneficiarios/${cedula}`);
+            loadBeneficiarios();
+        } catch (error) {
+            console.error('Error borrando beneficiario', error);
+        }
+    };
+
+    const confirmDelete = (cedula) => {
+        if (window.confirm('¿Está seguro de que desea eliminar este beneficiario?')) {
+            deleteBeneficiario(cedula);
+        }
+    };
 
     return (
         <div className="container mt-4">
@@ -30,13 +41,13 @@ export default function Beneficiarios() {
                 <div>
                     <button
                         className="btn btn-info mx-2"
-                        onClick={() => navigate("/beneficiaries/search")}
+                        onClick={() => navigate('/beneficiarios/search')}
                     >
                         Buscar Beneficiario
                     </button>
                     <button
                         className="btn btn-success"
-                        onClick={() => navigate("/beneficiaries/add")}
+                        onClick={() => navigate('/beneficiarios/add')}
                     >
                         Agregar Beneficiario
                     </button>
@@ -49,49 +60,45 @@ export default function Beneficiarios() {
                     <tr>
                         <th>#</th>
                         <th>Cédula</th>
-                        <th>Nombre</th>
+                        <th>Nombre Completo</th>
                         <th>Sexo</th>
-                        <th>Fecha Nacimiento</th>
+                        <th>Fecha Nac.</th>
                         <th>Edad</th>
                         <th>Religión</th>
                         <th>Escolaridad</th>
                         <th>Dependencia</th>
                         <th>Ingreso</th>
                         <th>Estado</th>
-                        <th>Contacto</th>
                         <th>Responsable</th>
                         <th>Tel. Responsable</th>
-                        <th>Dirección Responsable</th>
-                        <th>Info Financiera</th>
-                        <th>Pensionado</th>
+                        <th>Dir. Responsable</th>
+                        <th>Fondo</th>
+                        <th>Pensión</th>
                         <th>Presupuesto</th>
-                        <th>Observaciones</th>
                         <th>Foto</th>
                         <th>Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {beneficiarios.map((b, index) => (
+                    {beneficiarios.map((b, idx) => (
                         <tr key={b.cedula}>
-                            <td>{index + 1}</td>
+                            <td>{idx + 1}</td>
                             <td>{b.cedula}</td>
-                            <td>{b.nombre}</td>
+                            <td>{`${b.nombre} ${b.apellido1} ${b.apellido2}`}</td>
                             <td>{b.sexo}</td>
                             <td>{b.fechaNacimiento}</td>
                             <td>{b.edad}</td>
                             <td>{b.religion}</td>
-                            <td>{b.gradoEscolaridad}</td>
+                            <td>{b.escolaridad}</td>
                             <td>{b.estadoDependencia}</td>
                             <td>{b.fechaIngreso}</td>
-                            <td>{b.estado}</td>
-                            <td>{b.infoContacto}</td>
-                            <td>{b.personaResponsable}</td>
-                            <td>{b.telefonoResponsable}</td>
-                            <td>{b.direccionResponsable}</td>
-                            <td>{b.infoFinanciera}</td>
-                            <td>{b.pensionado}</td>
+                            <td>{b.estado ? 'Activo' : 'Inactivo'}</td>
+                            <td>{`${b.responsableNombre} ${b.responsableApellido1} ${b.responsableApellido2}`}</td>
+                            <td>{b.responsableTelefono}</td>
+                            <td>{b.responsableDireccion}</td>
+                            <td>{b.fondo?.tipo}</td>
+                            <td>{b.pension?.tipo}</td>
                             <td>{b.presupuesto}</td>
-                            <td>{b.observaciones}</td>
                             <td>
                                 {b.foto ? (
                                     <img
@@ -100,28 +107,25 @@ export default function Beneficiarios() {
                                         style={{ width: '100px', height: 'auto' }}
                                     />
                                 ) : (
-                                    "Sin foto"
+                                    'Sin foto'
                                 )}
                             </td>
                             <td>
                                 <button
-                                    className="btn btn-primary mx-2"
-                                    onClick={() => navigate(`/beneficiaries/view/${b.cedula}`)}
+                                    className="btn btn-primary mx-1"
+                                    onClick={() => navigate(`/beneficiarios/view/${b.cedula}`)}
                                 >
                                     Ver
                                 </button>
                                 <button
-                                    className="btn btn-outline-primary mx-2"
-                                    onClick={() => navigate(`/beneficiaries/edit/${b.cedula}`)}
+                                    className="btn btn-outline-primary mx-1"
+                                    onClick={() => navigate(`/beneficiarios/edit/${b.cedula}`)}
                                 >
                                     Editar
                                 </button>
                                 <button
-                                    className="btn btn-danger mx-2"
-                                    onClick={async () => {
-                                        await deleteBeneficiario(b.cedula);
-                                        loadBeneficiarios();
-                                    }}
+                                    className="btn btn-danger mx-1"
+                                    onClick={() => confirmDelete(b.cedula)}
                                 >
                                     Borrar
                                 </button>

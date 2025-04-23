@@ -13,11 +13,11 @@ function App() {
         <Router>
             <Routes>
                 <Route path="/" element={<AdminPanel />} />
-                <Route path="/beneficiaries" element={<Beneficiarios />} />
-                <Route path="/beneficiaries/add" element={<AddBeneficiario />} />
-                <Route path="/beneficiaries/edit/:id" element={<EditBeneficiario />} />
-                <Route path="/beneficiaries/view/:id" element={<ViewBeneficiario />} />
-                <Route path="/beneficiaries/search" element={<SearchBeneficiario />} />
+                <Route path="/beneficiarios" element={<Beneficiarios />} />
+                <Route path="/beneficiarios/add" element={<AddBeneficiario />} />
+                <Route path="/beneficiarios/edit/:id" element={<EditBeneficiario />} />
+                <Route path="/beneficiarios/view/:id" element={<ViewBeneficiario />} />
+                <Route path="/beneficiarios/search" element={<SearchBeneficiario />} />
             </Routes>
         </Router>
     );

@@ -10,10 +10,10 @@ export default function ViewBeneficiario() {
     useEffect(() => {
         const fetchBeneficiario = async () => {
             try {
-                const res = await axios.get(`http://localhost:8080/Beneficiario/${id}`);
+                const res = await axios.get(`http://localhost:8080/beneficiarios/${id}`);
                 setBeneficiario(res.data);
             } catch (error) {
-                console.error("Error al cargar el beneficiario", error);
+                console.error('Error al cargar el beneficiario', error);
             }
         };
 
@@ -24,100 +24,84 @@ export default function ViewBeneficiario() {
         return <div className="container mt-4">Cargando...</div>;
     }
 
+    const {
+        cedula,
+        nombre,
+        apellido1,
+        apellido2,
+        sexo,
+        fechaNacimiento,
+        edad,
+        religion,
+        escolaridad,
+        estadoDependencia,
+        fechaIngreso,
+        estado,
+        responsableNombre,
+        responsableApellido1,
+        responsableApellido2,
+        responsableTelefono,
+        responsableDireccion,
+        fondo,
+        pension,
+        presupuesto,
+        foto
+    } = beneficiario;
+
     return (
         <div className="container mt-4">
             <h2>Detalles del Beneficiario</h2>
-            <table className="table table-bordered mt-3">
-                <tbody>
-                <tr>
-                    <th>Cédula</th>
-                    <td>{beneficiario.cedula}</td>
-                </tr>
-                <tr>
-                    <th>Nombre</th>
-                    <td>{beneficiario.nombre}</td>
-                </tr>
-                <tr>
-                    <th>Sexo</th>
-                    <td>{beneficiario.sexo}</td>
-                </tr>
-                <tr>
-                    <th>Fecha Nacimiento</th>
-                    <td>{beneficiario.fechaNacimiento}</td>
-                </tr>
-                <tr>
-                    <th>Edad</th>
-                    <td>{beneficiario.edad}</td>
-                </tr>
-                <tr>
-                    <th>Religión</th>
-                    <td>{beneficiario.religion}</td>
-                </tr>
-                <tr>
-                    <th>Escolaridad</th>
-                    <td>{beneficiario.gradoEscolaridad}</td>
-                </tr>
-                <tr>
-                    <th>Dependencia</th>
-                    <td>{beneficiario.estadoDependencia}</td>
-                </tr>
-                <tr>
-                    <th>Ingreso</th>
-                    <td>{beneficiario.fechaIngreso}</td>
-                </tr>
-                <tr>
-                    <th>Estado</th>
-                    <td>{beneficiario.estado}</td>
-                </tr>
-                <tr>
-                    <th>Contacto</th>
-                    <td>{beneficiario.infoContacto}</td>
-                </tr>
-                <tr>
-                    <th>Responsable</th>
-                    <td>{beneficiario.personaResponsable}</td>
-                </tr>
-                <tr>
-                    <th>Tel. Responsable</th>
-                    <td>{beneficiario.telefonoResponsable}</td>
-                </tr>
-                <tr>
-                    <th>Dirección Responsable</th>
-                    <td>{beneficiario.direccionResponsable}</td>
-                </tr>
-                <tr>
-                    <th>Info Financiera</th>
-                    <td>{beneficiario.infoFinanciera}</td>
-                </tr>
-                <tr>
-                    <th>Pensionado</th>
-                    <td>{beneficiario.pensionado ? "Sí" : "No"}</td>
-                </tr>
-                <tr>
-                    <th>Presupuesto</th>
-                    <td>{beneficiario.presupuesto}</td>
-                </tr>
-                <tr>
-                    <th>Observaciones</th>
-                    <td>{beneficiario.observaciones}</td>
-                </tr>
-                <tr>
-                    <th>Foto</th>
-                    <td>
-                        {beneficiario.foto ? (
+            <div className="card mt-3 shadow-sm">
+                <div className="row g-0">
+                    <div className="col-md-4 text-center p-3">
+                        {foto ? (
                             <img
-                                src={`data:image/jpeg;base64,${beneficiario.foto}`}
+                                src={`data:image/jpeg;base64,${foto}`}
                                 alt="Foto del beneficiario"
-                                style={{ width: '200px', height: 'auto' }}
+                                className="img-fluid rounded"
                             />
                         ) : (
-                            "Sin foto"
+                            <div className="text-muted">Sin foto</div>
                         )}
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <button className="btn btn-secondary mt-3" onClick={() => navigate(-1)}>Volver</button>
+                    </div>
+                    <div className="col-md-8">
+                        <table className="table table-borderless mb-0 p-3">
+                            <tbody>
+                            <tr><th>Cédula</th><td>{cedula}</td></tr>
+                            <tr><th>Nombre Completo</th><td>{`${nombre} ${apellido1} ${apellido2}`}</td></tr>
+                            <tr><th>Sexo</th><td>{sexo}</td></tr>
+                            <tr><th>Fecha Nac.</th><td>{fechaNacimiento}</td></tr>
+                            <tr><th>Edad</th><td>{edad}</td></tr>
+                            <tr><th>Religión</th><td>{religion}</td></tr>
+                            <tr><th>Escolaridad</th><td>{escolaridad}</td></tr>
+                            <tr><th>Dependencia</th><td>{estadoDependencia}</td></tr>
+                            <tr><th>Fecha Ingreso</th><td>{fechaIngreso}</td></tr>
+                            <tr><th>Estado</th><td>{estado ? 'Activo' : 'Inactivo'}</td></tr>
+                            <tr><th>Responsable</th><td>{`${responsableNombre} ${responsableApellido1} ${responsableApellido2}`}</td></tr>
+                            <tr><th>Tel. Responsable</th><td>{responsableTelefono}</td></tr>
+                            <tr><th>Dir. Responsable</th><td>{responsableDireccion}</td></tr>
+                            <tr><th>Fondo</th><td>{fondo?.tipo || 'N/A'}</td></tr>
+                            <tr><th>Pensión</th><td>{pension?.tipo || 'N/A'}</td></tr>
+                            <tr><th>Presupuesto</th><td>{presupuesto}</td></tr>
+                            </tbody>
+                        </table>
+                        <div className="d-flex justify-content-end p-3">
+                            <button
+                                className="btn btn-outline-primary me-2"
+                                onClick={() => navigate(`/beneficiarios/edit/${cedula}`)}
+                            >
+                                Editar
+                            </button>
+                            <button
+                                className="btn btn-secondary"
+                                onClick={() => navigate(-1)}
+                            >
+                                Volver
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

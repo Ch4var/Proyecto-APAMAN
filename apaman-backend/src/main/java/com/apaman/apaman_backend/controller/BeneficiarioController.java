@@ -2,7 +2,12 @@ package com.apaman.apaman_backend.controller;
 
 import com.apaman.apaman_backend.exception.BeneficiarioNotFoundException;
 import com.apaman.apaman_backend.model.Beneficiario;
+import com.apaman.apaman_backend.model.Fondo;
+import com.apaman.apaman_backend.model.Pension;
 import com.apaman.apaman_backend.repository.BeneficiarioRepository;
+import com.apaman.apaman_backend.repository.FondoRepository;
+import com.apaman.apaman_backend.repository.PensionRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,15 +15,34 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
+@RequestMapping("/beneficiarios")
 @CrossOrigin("http://localhost:3000")
 public class BeneficiarioController {
 
     @Autowired
     private BeneficiarioRepository beneficiarioRepository;
 
-    @PostMapping("/agregarBeneficiario")
-    public Beneficiario newBeneficiario(@ModelAttribute Beneficiario newBeneficiario,
-                                        @RequestParam(value = "fotoFile", required = false) MultipartFile fotoFile) {
+    @Autowired
+    private FondoRepository fondoRepository;
+
+    @Autowired
+    private PensionRepository pensionRepository;
+
+    @PostMapping
+    public Beneficiario createBeneficiario(
+            @Valid @ModelAttribute Beneficiario newBeneficiario,
+            @RequestParam("idFondo") Integer idFondo,
+            @RequestParam("idPension") Integer idPension,
+            @RequestParam(value = "fotoFile", required = false) MultipartFile fotoFile) {
+
+        Fondo fondo = fondoRepository.findById(idFondo)
+                .orElseThrow(() -> new IllegalArgumentException("Fondo no encontrado: " + idFondo));
+        Pension pension = pensionRepository.findById(idPension)
+                .orElseThrow(() -> new IllegalArgumentException("Pensión no encontrada: " + idPension));
+
+        newBeneficiario.setFondo(fondo);
+        newBeneficiario.setPension(pension);
+
         if (fotoFile != null && !fotoFile.isEmpty()) {
             try {
                 newBeneficiario.setFoto(fotoFile.getBytes());
@@ -26,76 +50,94 @@ public class BeneficiarioController {
                 throw new RuntimeException("Error al leer el archivo de foto", e);
             }
         }
+
         return beneficiarioRepository.save(newBeneficiario);
     }
 
-    @GetMapping("/Beneficiarios")
-    public List<Beneficiario> getAllBeneficiarios(){
+    @GetMapping
+    public List<Beneficiario> getAllBeneficiarios() {
         return beneficiarioRepository.findAll();
     }
 
-    @GetMapping("/Beneficiario/{id}")
-    public Beneficiario getBeneficiarioById(@PathVariable Long id){
-        return beneficiarioRepository.findById(id)
-                .orElseThrow(() -> new BeneficiarioNotFoundException(id));
+    @GetMapping("/{cedula}")
+    public Beneficiario getBeneficiarioById(@PathVariable Integer cedula) {
+        return beneficiarioRepository.findById(cedula)
+                .orElseThrow(() -> new BeneficiarioNotFoundException(cedula));
     }
 
-    @PutMapping("/Beneficiario/{id}")
-    public Beneficiario updateBeneficiario(@ModelAttribute Beneficiario newBeneficiario,
-                                           @PathVariable Long id,
-                                           @RequestParam(value = "fotoFile", required = false) MultipartFile fotoFile) {
-        return beneficiarioRepository.findById(id)
-                .map(beneficiario -> {
-                    beneficiario.setNombre(newBeneficiario.getNombre());
-                    beneficiario.setSexo(newBeneficiario.getSexo());
-                    beneficiario.setFechaNacimiento(newBeneficiario.getFechaNacimiento());
-                    beneficiario.setReligion(newBeneficiario.getReligion());
-                    beneficiario.setGradoEscolaridad(newBeneficiario.getGradoEscolaridad());
-                    beneficiario.setEstadoDependencia(newBeneficiario.getEstadoDependencia());
-                    beneficiario.setFechaIngreso(newBeneficiario.getFechaIngreso());
+    @PutMapping("/{cedula}")
+    public Beneficiario updateBeneficiario(
+            @Valid @ModelAttribute Beneficiario updatedData,
+            @PathVariable Integer cedula,
+            @RequestParam("idFondo") Integer idFondo,
+            @RequestParam("idPension") Integer idPension,
+            @RequestParam(value = "fotoFile", required = false) MultipartFile fotoFile) {
+
+        return beneficiarioRepository.findById(cedula)
+                .map(b -> {
+                    b.setNombre(updatedData.getNombre());
+                    b.setApellido1(updatedData.getApellido1());
+                    b.setApellido2(updatedData.getApellido2());
+                    b.setSexo(updatedData.getSexo());
+                    b.setFechaNacimiento(updatedData.getFechaNacimiento());
+                    b.setEdad(updatedData.getEdad());
+                    b.setReligion(updatedData.getReligion());
+                    b.setEscolaridad(updatedData.getEscolaridad());
+                    b.setEstadoDependencia(updatedData.getEstadoDependencia());
+                    b.setFechaIngreso(updatedData.getFechaIngreso());
+
                     if (fotoFile != null && !fotoFile.isEmpty()) {
                         try {
-                            beneficiario.setFoto(fotoFile.getBytes());
+                            b.setFoto(fotoFile.getBytes());
                         } catch (IOException e) {
                             throw new RuntimeException("Error al leer el archivo de foto", e);
                         }
                     }
-                    beneficiario.setEstado(newBeneficiario.getEstado());
-                    beneficiario.setInfoContacto(newBeneficiario.getInfoContacto());
-                    beneficiario.setPersonaResponsable(newBeneficiario.getPersonaResponsable());
-                    beneficiario.setTelefonoResponsable(newBeneficiario.getTelefonoResponsable());
-                    beneficiario.setDireccionResponsable(newBeneficiario.getDireccionResponsable());
-                    beneficiario.setInfoFinanciera(newBeneficiario.getInfoFinanciera());
-                    beneficiario.setPensionado(newBeneficiario.getPensionado());
-                    beneficiario.setPresupuesto(newBeneficiario.getPresupuesto());
-                    beneficiario.setObservaciones(newBeneficiario.getObservaciones());
-                    return beneficiarioRepository.save(beneficiario);
+
+                    b.setEstado(updatedData.getEstado());
+                    b.setResponsableNombre(updatedData.getResponsableNombre());
+                    b.setResponsableApellido1(updatedData.getResponsableApellido1());
+                    b.setResponsableApellido2(updatedData.getResponsableApellido2());
+                    b.setResponsableTelefono(updatedData.getResponsableTelefono());
+                    b.setResponsableDireccion(updatedData.getResponsableDireccion());
+                    Fondo fondo = fondoRepository.findById(idFondo)
+                            .orElseThrow(() -> new IllegalArgumentException("Fondo no encontrado: " + idFondo));
+                    Pension pension = pensionRepository.findById(idPension)
+                            .orElseThrow(() -> new IllegalArgumentException("Pensión no encontrada: " + idPension));
+                    b.setFondo(fondo);
+                    b.setPension(pension);
+                    b.setPresupuesto(updatedData.getPresupuesto());
+                    return beneficiarioRepository.save(b);
                 })
-                .orElseThrow(() -> new BeneficiarioNotFoundException(id));
+                .orElseThrow(() -> new BeneficiarioNotFoundException(cedula));
     }
 
-    @DeleteMapping("/Beneficiario/{id}")
-    public String deleteUser(@PathVariable Long id){
-        if(!beneficiarioRepository.existsById(id)){
-            throw new BeneficiarioNotFoundException(id);
+    @DeleteMapping("/{cedula}")
+    public String deleteBeneficiario(@PathVariable Integer cedula) {
+        if (!beneficiarioRepository.existsById(cedula)) {
+            throw new BeneficiarioNotFoundException(cedula);
         }
-        beneficiarioRepository.deleteById(id);
-        return "El beneficiario con la cédula " + id + " ha sido borrado exitosamente";
+        beneficiarioRepository.deleteById(cedula);
+        return "El beneficiario con la cédula " + cedula + " ha sido borrado exitosamente";
     }
 
-    @GetMapping("/Beneficiarios/search")
-    public List<Beneficiario> searchBeneficiario(@RequestParam(required = false) String cedula,
-                                                 @RequestParam(required = false) String nombre) {
+    @GetMapping("/search")
+    public List<Beneficiario> searchBeneficiario(
+            @RequestParam(required = false) String cedula,
+            @RequestParam(required = false) String nombre) {
 
-        if (cedula != null && !cedula.trim().isEmpty() && nombre != null && !nombre.trim().isEmpty()) {
-            throw new IllegalArgumentException("Solo se puede buscar por cédula o por nombre, no ambos.");
-        }
         if (cedula != null && !cedula.trim().isEmpty()) {
+            if (nombre != null && !nombre.trim().isEmpty()) {
+                throw new IllegalArgumentException("Solo se puede buscar por cédula o por nombre, no ambos.");
+            }
             return beneficiarioRepository.findByCedulaContaining(cedula);
         }
+
         if (nombre != null && !nombre.trim().isEmpty()) {
             return beneficiarioRepository.findByNombreContainingIgnoreCase(nombre);
         }
+
         return beneficiarioRepository.findAll();
     }
+
 }

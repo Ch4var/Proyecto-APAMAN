@@ -23,7 +23,7 @@ export default function AdminPanel() {
                             <FaUser /> Administrar Usuarios
                         </button>
                     </Link>
-                    <Link to="/beneficiaries">
+                    <Link to="/beneficiarios">
                         <button>
                             <FaUserFriends /> Administrar Beneficiarios
                         </button>
