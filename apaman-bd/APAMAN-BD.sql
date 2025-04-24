@@ -10,7 +10,7 @@ USE apaman;
 -- Tabla `asociado`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `asociado` (
-  `cedula` INT NOT NULL,
+  `cedula` VARCHAR(9) NOT NULL,
   `nombre` VARCHAR(20) NOT NULL,
   `apellido_1` VARCHAR(20) NOT NULL,
   `apellido_2` VARCHAR(20) NOT NULL,
@@ -50,8 +50,8 @@ CREATE TABLE IF NOT EXISTS `acta_asociado` (
 -- -----------------------------------------------------
 CREATE TABLE referente_asociado (
   id                INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  asociado_cedula   INT NOT NULL,
-  referente_cedula  INT NOT NULL,
+  asociado_cedula   VARCHAR(9) NOT NULL,
+  referente_cedula  VARCHAR(9) NOT NULL,
   
   INDEX idx_asoc_ced (asociado_cedula),
   INDEX idx_refe_ced (referente_cedula),
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS `pension` (
 -- Tabla `beneficiario`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `beneficiario` (
-  `cedula` INT NOT NULL,
+  `cedula` VARCHAR(9) NOT NULL,
   `nombre` VARCHAR(20) NOT NULL,
   `apellido_1` VARCHAR(20) NOT NULL,
   `apellido_2` VARCHAR(20) NOT NULL,
@@ -138,8 +138,8 @@ CREATE TABLE IF NOT EXISTS `beneficiario` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS observacion (
   id                   INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  asociado_cedula      INT NOT NULL,
-  beneficiario_cedula  INT NOT NULL,
+  asociado_cedula      VARCHAR(9) NOT NULL,
+  beneficiario_cedula  VARCHAR(9) NOT NULL,
   fecha                TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   contenido            VARCHAR(200),
   
@@ -170,7 +170,7 @@ CREATE TABLE IF NOT EXISTS observacion (
 -- Table `usuario`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `usuario` (
-  `cedula` INT NOT NULL,
+  `cedula` VARCHAR(9) NOT NULL,
   `rol` VARCHAR(10) NOT NULL,
   `correo` VARCHAR(45) NOT NULL,
   `contrasena` VARCHAR(45) NOT NULL,
@@ -221,3 +221,19 @@ BEGIN
   END IF;
 END$$
 DELIMITER ;
+
+-- =====================================================
+-- Seccion Roles
+-- =====================================================
+-- 1) Crear tabla de roles si no existe
+CREATE TABLE IF NOT EXISTS roles (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- 2) Insertar los roles invariables (no duplicará si ya existen)
+INSERT IGNORE INTO roles (nombre) VALUES
+  ('Administrador'),
+  ('Asistente'),
+  ('ProfesionalSalud'),
+  ('Revisor');

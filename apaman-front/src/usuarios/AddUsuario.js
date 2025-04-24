@@ -1,99 +1,95 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const AddUsuario = () => {
-  const [username, setUsername] = useState("");
-  const [correo, setCorreo] = useState("");
-  const [cedula, setCedula] = useState("");
-  const [contrasena, setContrasena] = useState("");
-  const [rolesDisponibles, setRolesDisponibles] = useState([]);
-  const [rolesSeleccionados, setRolesSeleccionados] = useState([]);
+export default function AddUsuario() {
+  const navigate = useNavigate();
+  const [usuario, setUsuario] = useState({
+    cedula: '',
+    correo: '',
+    contrasena: '',
+    rol: 'ADMINISTRADOR'
+  });
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetch("/api/roles")
-      .then((res) => res.json())
-      .then((data) => setRolesDisponibles(data));
-  }, []);
-
-  const toggleRol = (rol) => {
-    if (rolesSeleccionados.includes(rol)) {
-      setRolesSeleccionados(rolesSeleccionados.filter((r) => r !== rol));
-    } else {
-      setRolesSeleccionados([...rolesSeleccionados, rol]);
-    }
+  const handleChange = e => {
+    setUsuario({ ...usuario, [e.target.name]: e.target.value });
   };
 
-  const manejarSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    const usuario = {
-      username,
-      correo,
-      cedula,
-      contrasena,
-      roles: rolesSeleccionados.map((nombre) => ({ nombre }))
-    };
-
-    const res = await fetch("/api/usuarios", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(usuario),
-    });
-
-    if (res.ok) {
-      alert("Usuario agregado");
-      setUsername(""); setCorreo(""); setCedula(""); setContrasena(""); setRolesSeleccionados([]);
-    } else {
-      alert("Error al agregar usuario");
+    try {
+      await axios.post('http://localhost:8080/api/usuarios', usuario, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      navigate('/users');
+    } catch (err) {
+      console.error(err);
+      setError('No se pudo agregar el usuario');
     }
   };
 
   return (
-    <div>
+    <div className="container mt-4">
       <h2>Agregar Usuario</h2>
-      <form onSubmit={manejarSubmit}>
-        <input
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          placeholder="Correo"
-          value={correo}
-          onChange={(e) => setCorreo(e.target.value)}
-          required
-        />
-        <input
-          placeholder="Cédula"
-          value={cedula}
-          onChange={(e) => setCedula(e.target.value)}
-          required
-        />
-        <input
-          placeholder="Contrasena"
-          type="password"
-          value={contrasena}
-          onChange={(e) => setContrasena(e.target.value)}
-          required
-        />
-
-        <div>
-          <p>Seleccionar Roles:</p>
-          {rolesDisponibles.map((rol) => (
-            <label key={rol.id}>
-              <input
-                type="checkbox"
-                checked={rolesSeleccionados.includes(rol.nombre)}
-                onChange={() => toggleRol(rol.nombre)}
-              />
-              {rol.nombre}
-            </label>
-          ))}
+      {error && <div className="alert alert-danger">{error}</div>}
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <label className="form-label">Cédula</label>
+          <input
+            type="text"
+            className="form-control"
+            name="cedula"
+            value={usuario.cedula}
+            onChange={handleChange}
+            required
+          />
         </div>
-
-        <button type="submit">Guardar Usuario</button>
+        <div className="mb-3">
+          <label className="form-label">Correo</label>
+          <input
+            type="email"
+            className="form-control"
+            name="correo"
+            value={usuario.correo}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Contraseña</label>
+          <input
+            type="password"
+            className="form-control"
+            name="contrasena"
+            value={usuario.contrasena}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Rol</label>
+          <select
+            className="form-select"
+            name="rol"
+            value={usuario.rol}
+            onChange={handleChange}
+          >
+            <option value="ADMINISTRADOR">ADMINISTRADOR</option>
+            <option value="ASISTENTE">ASISTENTE</option>
+            <option value="CONTABILIDAD">CONTABILIDAD</option>
+            <option value="PROFESIONAL_SALUD">PROFESIONAL_SALUD</option>
+          </select>
+        </div>
+        <button type="submit" className="btn btn-primary">Guardar</button>
+        <button
+          type="button"
+          className="btn btn-secondary ms-2"
+          onClick={() => navigate('/users')}
+        >
+          Cancelar
+        </button>
       </form>
     </div>
   );
-};
-
-export default AddUsuario;
+}
