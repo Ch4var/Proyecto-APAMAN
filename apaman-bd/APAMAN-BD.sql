@@ -7,18 +7,6 @@ USE apaman;
 -- =====================================================
 
 -- -----------------------------------------------------
--- Tabla `acta_asociado`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `acta_asociado` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `fecha_sesion` DATE NOT NULL,
-  `num_acta` VARCHAR(20) NOT NULL,
-  `num_acuerdo` VARCHAR(20) NOT NULL,
-  
-  PRIMARY KEY (`id`)
-);
-
--- -----------------------------------------------------
 -- Tabla `asociado`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `asociado` (
@@ -32,8 +20,7 @@ CREATE TABLE IF NOT EXISTS `asociado` (
   `estado` BOOLEAN DEFAULT TRUE,
   
   `fecha_asociacion` DATE NOT NULL,
-  `acta_asociado_id` INT NOT NULL,
-
+  
   `cuota_mensual` DECIMAL(10,2) NOT NULL,
   `estado_morosidad` BOOLEAN DEFAULT FALSE,
   `meses_adeudo` INT NOT NULL DEFAULT '0',
@@ -43,18 +30,25 @@ CREATE TABLE IF NOT EXISTS `asociado` (
   `telefono` INT NOT NULL,
   `direccion` VARCHAR(200) NOT NULL,
   
-  PRIMARY KEY (`cedula`),
+  PRIMARY KEY (`cedula`)
+);
 
-  -- Relación one-to-one
-  CONSTRAINT fk_asociado_acta
-    FOREIGN KEY (acta_asociado_id)
-    REFERENCES acta_asociado(id)
+-- -----------------------------------------------------
+-- Tabla `acta_asociado`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `acta_asociado` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `fecha_sesion` DATE NOT NULL,
+  `num_acta` VARCHAR(20) NOT NULL,
+  `num_acuerdo` VARCHAR(20) NOT NULL,
+  
+  PRIMARY KEY (`id`)
 );
 
 -- -----------------------------------------------------
 -- Tabla `referente_asociado`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS referente_asociado (
+CREATE TABLE referente_asociado (
   id                INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   asociado_cedula   INT NOT NULL,
   referente_cedula  INT NOT NULL,
@@ -143,11 +137,11 @@ CREATE TABLE IF NOT EXISTS `beneficiario` (
 -- Tabla `observacion`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS observacion (
-  id                   INT            NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  asociado_cedula      INT            NULL,
-  beneficiario_cedula  INT            NULL,
-  fecha                TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  contenido            VARCHAR(200)   NULL,
+  id                   INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  asociado_cedula      INT NOT NULL,
+  beneficiario_cedula  INT NOT NULL,
+  fecha                TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  contenido            VARCHAR(200),
   
   INDEX idx_obs_asoc   (asociado_cedula),
   INDEX idx_obs_bene   (beneficiario_cedula),
@@ -176,16 +170,12 @@ CREATE TABLE IF NOT EXISTS observacion (
 -- Table `usuario`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `usuario` (
-  `id_usuario` INT NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(45) NOT NULL,
+  `cedula` INT NOT NULL,
+  `rol` VARCHAR(10) NOT NULL,
   `correo` VARCHAR(45) NOT NULL,
-  `cedula` VARCHAR(20) NULL,
-  `contraseña` VARCHAR(45) NOT NULL,
+  `contrasena` VARCHAR(45) NOT NULL,
   
-  PRIMARY KEY (`id_usuario`),
-  UNIQUE INDEX `contraseña_UNIQUE` (`contraseña` ASC) VISIBLE,
-  UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE,
-  UNIQUE INDEX `id_usuario_UNIQUE` (`id_usuario` ASC) VISIBLE
+  PRIMARY KEY (`cedula`)
 );
 
 -- Habilitar eventos (si no lo están)
