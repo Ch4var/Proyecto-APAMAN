@@ -6,10 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d0444a61-b729-4de7-950c-cb6deee5062a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apaman-bd/APAMAN-BD.sql" beforeDir="false" afterPath="$PROJECT_DIR$/apaman-bd/APAMAN-BD.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apaman-front/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/apaman-front/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apaman-front/src/usuarios/AddUsuario.js" beforeDir="false" afterPath="$PROJECT_DIR$/apaman-front/src/usuarios/AddUsuario.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apaman-front/src/usuarios/UsuariosPanel.js" beforeDir="false" afterPath="$PROJECT_DIR$/apaman-front/src/usuarios/UsuariosPanel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apaman-front/src/layout/AdminPanel.js" beforeDir="false" afterPath="$PROJECT_DIR$/apaman-front/src/layout/AdminPanel.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
