@@ -1,10 +1,22 @@
 -- Crear base de datos y conectarse
-CREATE DATABASE IF NOT EXISTS APAMAN_BD;
-USE APAMAN_BD;
+CREATE DATABASE IF NOT EXISTS apaman;
+USE apaman;
 
 -- =====================================================
 -- Seccion Asociados
 -- =====================================================
+
+-- -----------------------------------------------------
+-- Tabla `acta_asociado`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `acta_asociado` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `fecha_sesion` DATE NOT NULL,
+  `num_acta` VARCHAR(20) NOT NULL,
+  `num_acuerdo` VARCHAR(20) NOT NULL,
+  
+  PRIMARY KEY (`id`)
+);
 
 -- -----------------------------------------------------
 -- Tabla `asociado`
@@ -20,7 +32,8 @@ CREATE TABLE IF NOT EXISTS `asociado` (
   `estado` BOOLEAN DEFAULT TRUE,
   
   `fecha_asociacion` DATE NOT NULL,
-  
+  `acta_asociado_id` INT NOT NULL,
+
   `cuota_mensual` DECIMAL(10,2) NOT NULL,
   `estado_morosidad` BOOLEAN DEFAULT FALSE,
   `meses_adeudo` INT NOT NULL DEFAULT '0',
@@ -30,25 +43,18 @@ CREATE TABLE IF NOT EXISTS `asociado` (
   `telefono` INT NOT NULL,
   `direccion` VARCHAR(200) NOT NULL,
   
-  PRIMARY KEY (`cedula`)
-);
+  PRIMARY KEY (`cedula`),
 
--- -----------------------------------------------------
--- Tabla `acta_asociado`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `acta_asociado` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `fecha_sesion` DATE NOT NULL,
-  `num_acta` VARCHAR(20) NOT NULL,
-  `num_acuerdo` VARCHAR(20) NOT NULL,
-  
-  PRIMARY KEY (`id`)
+  -- Relación one-to-one
+  CONSTRAINT fk_asociado_acta
+    FOREIGN KEY (acta_asociado_id)
+    REFERENCES acta_asociado(id)
 );
 
 -- -----------------------------------------------------
 -- Tabla `referente_asociado`
 -- -----------------------------------------------------
-CREATE TABLE referente_asociado (
+CREATE TABLE IF NOT EXISTS referente_asociado (
   id                INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   asociado_cedula   INT NOT NULL,
   referente_cedula  INT NOT NULL,
