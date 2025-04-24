@@ -103,7 +103,7 @@ public class Asociado {
     @Column(name = "meses_adeudo", nullable = false)
     private Integer mesesAdeudo = 0;
 
-    @NotNull @DecimalMin("0.00")
+    @NotNull
     @Column(name = "cantidad_adeudo", nullable = false, precision = 10, scale = 2)
     private BigDecimal cantidadAdeudo = BigDecimal.ZERO;
 

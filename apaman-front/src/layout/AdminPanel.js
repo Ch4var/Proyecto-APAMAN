@@ -28,12 +28,12 @@ export default function AdminPanel() {
                             <FaUserFriends /> Administrar Beneficiarios
                         </button>
                     </Link>
-                    <Link to="/associates">
+                    <Link to="/asociados">
                         <button>
                             <FaUsers /> Administrar Asociados
                         </button>
                     </Link>
-                    <Link to="/reports">
+                    <Link to="/reportes">
                         <button>
                             <FaFileInvoiceDollar /> Reportes
                         </button>
