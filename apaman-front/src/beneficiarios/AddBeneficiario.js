@@ -56,7 +56,7 @@ export default function AddBeneficiario() {
             alert("Nombre y apellidos deben contener solo letras.");
             return;
         }
-        if (!["Masculino","Femenina","Otro"].includes(beneficiario.sexo)) {
+        if (!["Masculino","Femenino","Otro"].includes(beneficiario.sexo)) {
             alert("Seleccione un Sexo válido.");
             return;
         }
@@ -85,7 +85,7 @@ export default function AddBeneficiario() {
             alert("Seleccione una Escolaridad válida.");
             return;
         }
-        if (!["Dependiente","Moderadamente Dependiente","Independiente"].includes(beneficiario.estadoDependencia)) {
+        if (!["Dependiente","Moderadamente_Dependiente","Independiente"].includes(beneficiario.estadoDependencia)) {
             alert("Seleccione un Estado de Dependencia válido.");
             return;
         }
@@ -210,7 +210,7 @@ export default function AddBeneficiario() {
                         >
                             <option value="">Seleccione</option>
                             <option value="Masculino">Masculino</option>
-                            <option value="Femenina">Femenina</option>
+                            <option value="Femenino">Femenino</option>
                             <option value="Otro">Otro</option>
                         </select>
                     </div>
@@ -275,7 +275,7 @@ export default function AddBeneficiario() {
                         >
                             <option value="">Seleccione</option>
                             <option value="Dependiente">Dependiente</option>
-                            <option value="Moderadamente Dependiente">Moderadamente Dependiente</option>
+                            <option value="Moderadamente_Dependiente">Moderadamente Dependiente</option>
                             <option value="Independiente">Independiente</option>
                         </select>
                     </div>

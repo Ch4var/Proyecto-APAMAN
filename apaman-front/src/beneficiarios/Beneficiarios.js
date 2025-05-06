@@ -124,6 +124,36 @@ export default function Beneficiarios() {
                                     Editar
                                 </button>
                                 <button
+                                    className="btn btn-info mx-1"
+                                    onClick={() => navigate(`/beneficiarios/${b.cedula}/observaciones`)}
+                                >
+                                    Observaciones
+                                </button>
+                                <button
+                                    className="btn btn-warning mx-1"
+                                    onClick={() => navigate(`/beneficiarios/${b.cedula}/salud`)}
+                                >
+                                    Salud
+                                </button>
+                                <button
+                                    className="btn btn-success mx-1"
+                                    onClick={() => navigate(`/beneficiarios/${b.cedula}/economico`)}
+                                >
+                                    Económico
+                                </button>
+                                <button
+                                    className="btn btn-secondary mx-1"
+                                    onClick={() => navigate(`/beneficiarios/${b.cedula}/expedientes`)}
+                                >
+                                    Expedientes
+                                </button>
+                                <button
+                                    className="btn btn-dark mx-1"
+                                    onClick={() => navigate(`/beneficiarios/${b.cedula}/historias`)}
+                                >
+                                    Historias Médicas
+                                </button>
+                                <button
                                     className="btn btn-danger mx-1"
                                     onClick={() => confirmDelete(b.cedula)}
                                 >
