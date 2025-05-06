@@ -27,16 +27,7 @@ public class Fondo {
     public enum Tipo {
         Familiar,
         CONAPAM,
-        Junta_Proteccion_Social
+        Junta_Protección_Social
     }
 
-    @Column(name = "comentario", nullable = false, length = 200)
-    @NotBlank
-    @Size(max = 200)
-    private String comentario;
-
-    @Column(name = "monto", nullable = false, precision = 10, scale = 2)
-    @NotNull
-    @DecimalMin("0.00")
-    private BigDecimal monto;
 }

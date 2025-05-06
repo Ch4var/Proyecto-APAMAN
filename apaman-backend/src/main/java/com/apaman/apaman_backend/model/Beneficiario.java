@@ -6,8 +6,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "beneficiario")
@@ -43,7 +41,7 @@ public class Beneficiario {
 
     public enum Sexo {
         Masculino,
-        Femenina,
+        Femenino,
         Otro
     }
 

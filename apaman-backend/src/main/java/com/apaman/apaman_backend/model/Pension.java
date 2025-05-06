@@ -27,14 +27,4 @@ public class Pension {
         RNC,
         IVM
     }
-
-    @Column(name = "comentario", nullable = false, length = 200)
-    @NotBlank
-    @Size(max = 200)
-    private String comentario;
-
-    @Column(name = "monto", nullable = false, precision = 10, scale = 2)
-    @NotNull
-    @DecimalMin("0.00")
-    private BigDecimal monto;
 }
