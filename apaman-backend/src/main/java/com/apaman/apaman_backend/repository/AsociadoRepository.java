@@ -3,58 +3,53 @@ package com.apaman.apaman_backend.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.apaman.apaman_backend.model.Asociado;
 
-/**
- * Interfaz de acceso a datos para la entidad Asociado.
- * Provee métodos de búsqueda por cédula y nombre, tanto exactas como parciales.
- */
 @Repository
-public interface AsociadoRepository extends JpaRepository<Asociado, String> {
+public interface AsociadoRepository extends JpaRepository<Asociado, Integer> {
+
+    // -------------------------
+    // BÚSQUEDAS EXACTAS
+    // -------------------------
+
+    /** Cédula exacta */
+    List<Asociado> findByCedula(Integer cedula);
+
+    /** Nombre exacto (ignore case) */
+    List<Asociado> findByNombreIgnoreCase(String nombre);
+
+    /** Cédula o nombre exactos (ignore case en nombre) */
+    List<Asociado> findByCedulaOrNombreIgnoreCase(Integer cedula, String nombre);
+
+
+    // -------------------------
+    // BÚSQUEDAS PARCIALES
+    // -------------------------
+
+    /** Nombre contenga (ignore case) */
+    List<Asociado> findByNombreContainingIgnoreCase(String nombre);
 
     /**
-     * Busca asociados cuya cédula coincide exactamente (ignore case).
-     * @param cedula la cédula a buscar
-     * @return lista de asociados con cédula exacta
+     * Cédula parcial (transformada a cadena)
+     * Nota: puede requerir soporte de tu dialecto JPA para función de conversión a String.
      */
-    List<Asociado> exactByCedula(String cedula);
+    @Query("SELECT a FROM Asociado a WHERE str(a.cedula) LIKE %:cedula%")
+    List<Asociado> findByCedulaContaining(@Param("cedula") String cedula);
 
     /**
-     * Busca asociados cuyo nombre coincide exactamente (ignore case).
-     * @param nombre el nombre a buscar
-     * @return lista de asociados con nombre exacto
+     * Cédula parcial o nombre parcial (ignore case en nombre)
      */
-    List<Asociado> exactByNombre(String nombre);
-
-    /**
-     * Busca asociados cuya cédula contiene la cadena dada (ignore case).
-     * @param cedula fragmento de cédula
-     * @return lista de asociados con coincidencia parcial en cédula
-     */
-    List<Asociado> partialByCedula(String cedula);
-
-    /**
-     * Busca asociados cuyo nombre contiene la cadena dada (ignore case).
-     * @param nombre fragmento de nombre
-     * @return lista de asociados con coincidencia parcial en nombre
-     */
-    List<Asociado> partialByNombre(String nombre);
-
-    /**
-     * Busca asociados cuya cédula o nombre coinciden exactamente (ignore case).
-     * @param cedula la cédula exacta
-     * @param nombre el nombre exacto
-     * @return lista de asociados que cumplen cualquiera de los criterios exactos
-     */
-    List<Asociado> exact(String cedula, String nombre);
-
-    /**
-     * Busca asociados cuya cédula o nombre contienen la cadena dada (ignore case).
-     * @param cedula fragmento de cédula
-     * @param nombre fragmento de nombre
-     * @return lista de asociados con coincidencia parcial en cualquiera de los campos
-     */
-    List<Asociado> partial(String cedula, String nombre);
+    @Query("""
+        SELECT a FROM Asociado a
+         WHERE str(a.cedula) LIKE %:cedula%
+           OR lower(a.nombre) LIKE lower(concat('%', :nombre, '%'))
+        """)
+    List<Asociado> findByCedulaContainingOrNombreContainingIgnoreCase(
+        @Param("cedula") String cedula,
+        @Param("nombre") String nombre
+    );
 }
