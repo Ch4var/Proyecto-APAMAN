@@ -11,7 +11,6 @@ export default function ExpedienteAdministrativoBeneficiario() {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
 
-    // carga inicial
     useEffect(() => {
         if (!cedula) {
             setError('No se pudo obtener la cédula.');
@@ -64,7 +63,6 @@ export default function ExpedienteAdministrativoBeneficiario() {
                 `http://localhost:8080/beneficiarios/${cedula}/expedientes/${expId}`,
                 { responseType: 'blob' }
             );
-            // crear enlace de descarga
             const url = window.URL.createObjectURL(new Blob([resp.data], { type: 'application/pdf' }));
             const link = document.createElement('a');
             link.href = url;

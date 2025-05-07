@@ -23,7 +23,6 @@ export default function FormularioEconomicoBeneficiario() {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
 
-    // Carga inicial del formulario si existe
     useEffect(() => {
         if (!cedula) {
             setError('No se pudo obtener la cédula.');

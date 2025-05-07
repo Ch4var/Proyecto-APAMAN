@@ -19,7 +19,6 @@ export default function HistoriaMedicaBeneficiario() {
 
     const mediaInputs = useRef({});
     const [previews, setPreviews] = useState({});
-    // lightbox state
     const [lightbox, setLightbox] = useState({ open: false, url: '' });
 
     useEffect(() => {

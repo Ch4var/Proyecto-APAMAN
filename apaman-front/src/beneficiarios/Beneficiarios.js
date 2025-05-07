@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 export default function Beneficiarios() {
     const [beneficiarios, setBeneficiarios] = useState([]);
     const navigate = useNavigate();
+
+    const topScrollRef = useRef(null);
+    const bottomScrollRef = useRef(null);
+    const tableRef = useRef(null);
 
     useEffect(() => {
         loadBeneficiarios();
@@ -34,6 +38,66 @@ export default function Beneficiarios() {
         }
     };
 
+    const handleActionChange = (e, cedula) => {
+        const action = e.target.value;
+        switch (action) {
+            case 'view':
+                navigate(`/beneficiarios/view/${cedula}`);
+                break;
+            case 'edit':
+                navigate(`/beneficiarios/edit/${cedula}`);
+                break;
+            case 'observaciones':
+                navigate(`/beneficiarios/${cedula}/observaciones`);
+                break;
+            case 'salud':
+                navigate(`/beneficiarios/${cedula}/salud`);
+                break;
+            case 'economico':
+                navigate(`/beneficiarios/${cedula}/economico`);
+                break;
+            case 'expedientes':
+                navigate(`/beneficiarios/${cedula}/expedientes`);
+                break;
+            case 'historias':
+                navigate(`/beneficiarios/${cedula}/historias`);
+                break;
+            case 'delete':
+                confirmDelete(cedula);
+                break;
+            default:
+                break;
+        }
+        e.target.selectedIndex = 0;
+    };
+
+    useEffect(() => {
+        const top = topScrollRef.current;
+        const bottom = bottomScrollRef.current;
+        if (!top || !bottom) return;
+
+        const syncTopScroll = () => { bottom.scrollLeft = top.scrollLeft; };
+        const syncBottomScroll = () => { top.scrollLeft = bottom.scrollLeft; };
+
+        top.addEventListener('scroll', syncTopScroll);
+        bottom.addEventListener('scroll', syncBottomScroll);
+
+        const setDummyWidth = () => {
+            if (tableRef.current) {
+                const width = tableRef.current.scrollWidth;
+                top.firstChild.style.width = width + 'px';
+            }
+        };
+        setDummyWidth();
+        window.addEventListener('resize', setDummyWidth);
+
+        return () => {
+            top.removeEventListener('scroll', syncTopScroll);
+            bottom.removeEventListener('scroll', syncBottomScroll);
+            window.removeEventListener('resize', setDummyWidth);
+        };
+    }, [beneficiarios]);
+
     return (
         <div className="container mt-4">
             <div className="d-flex justify-content-between align-items-center mb-3">
@@ -54,9 +118,24 @@ export default function Beneficiarios() {
                 </div>
             </div>
 
-            <div className="table-responsive">
-                <table className="table table-bordered table-striped">
-                    <thead className="table-dark">
+            {/* Scrollbar top para desplazamiento horizontal */}
+            <div
+                ref={topScrollRef}
+                style={{ overflowX: 'auto', overflowY: 'hidden' }}
+            >
+                <div style={{ height: '1px', width: '1px' }} />
+            </div>
+
+            <div
+                ref={bottomScrollRef}
+                className="table-responsive"
+                style={{ maxHeight: '70vh', overflowY: 'auto' }}
+            >
+                <table
+                    ref={tableRef}
+                    className="table table-bordered table-striped"
+                >
+                    <thead className="table-dark" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                     <tr>
                         <th>#</th>
                         <th>Cédula</th>
@@ -110,55 +189,24 @@ export default function Beneficiarios() {
                                     'Sin foto'
                                 )}
                             </td>
-                            <td>
-                                <button
-                                    className="btn btn-primary mx-1"
-                                    onClick={() => navigate(`/beneficiarios/view/${b.cedula}`)}
+                            <td style={{ minWidth: '150px' }}>
+                                <select
+                                    className="form-select"
+                                    defaultValue=""
+                                    onChange={(e) => handleActionChange(e, b.cedula)}
                                 >
-                                    Ver
-                                </button>
-                                <button
-                                    className="btn btn-outline-primary mx-1"
-                                    onClick={() => navigate(`/beneficiarios/edit/${b.cedula}`)}
-                                >
-                                    Editar
-                                </button>
-                                <button
-                                    className="btn btn-info mx-1"
-                                    onClick={() => navigate(`/beneficiarios/${b.cedula}/observaciones`)}
-                                >
-                                    Observaciones
-                                </button>
-                                <button
-                                    className="btn btn-warning mx-1"
-                                    onClick={() => navigate(`/beneficiarios/${b.cedula}/salud`)}
-                                >
-                                    Salud
-                                </button>
-                                <button
-                                    className="btn btn-success mx-1"
-                                    onClick={() => navigate(`/beneficiarios/${b.cedula}/economico`)}
-                                >
-                                    Económico
-                                </button>
-                                <button
-                                    className="btn btn-secondary mx-1"
-                                    onClick={() => navigate(`/beneficiarios/${b.cedula}/expedientes`)}
-                                >
-                                    Expedientes
-                                </button>
-                                <button
-                                    className="btn btn-dark mx-1"
-                                    onClick={() => navigate(`/beneficiarios/${b.cedula}/historias`)}
-                                >
-                                    Historias Médicas
-                                </button>
-                                <button
-                                    className="btn btn-danger mx-1"
-                                    onClick={() => confirmDelete(b.cedula)}
-                                >
-                                    Borrar
-                                </button>
+                                    <option value="" disabled>
+                                        Acciones
+                                    </option>
+                                    <option value="view">Ver</option>
+                                    <option value="edit">Editar</option>
+                                    <option value="observaciones">Observaciones</option>
+                                    <option value="salud">Salud</option>
+                                    <option value="economico">Económico</option>
+                                    <option value="expedientes">Expedientes</option>
+                                    <option value="historias">Historias Médicas</option>
+                                    <option value="delete">Borrar</option>
+                                </select>
                             </td>
                         </tr>
                     ))}

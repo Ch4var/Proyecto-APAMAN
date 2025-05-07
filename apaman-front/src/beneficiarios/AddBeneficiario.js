@@ -16,7 +16,7 @@ export default function AddBeneficiario() {
         escolaridad: "",
         estadoDependencia: "",
         fechaIngreso: "",
-        estado: "true",          // true = Activo, false = Inactivo
+        estado: "true",
         responsableNombre: "",
         responsableApellido1: "",
         responsableApellido2: "",
