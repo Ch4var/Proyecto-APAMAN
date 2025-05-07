@@ -25,37 +25,31 @@ public class FormularioEconomicoBeneficiario {
     @JsonIgnore
     private Beneficiario beneficiario;
 
-    // Pensión RNC
     @Column(nullable = false)
     private Boolean pensionRnc;
     @Column(precision = 10, scale = 2)
     private BigDecimal montoPensionRnc;
 
-    // Pensión IVM
     @Column(nullable = false)
     private Boolean pensionIvm;
     @Column(precision = 10, scale = 2)
     private BigDecimal montoPensionIvm;
 
-    // Otra pensión
     @Column(nullable = false)
     private Boolean pensionOtro;
     @Column(precision = 10, scale = 2)
     private BigDecimal montoPensionOtro;
 
-    // Aporte familiar
     @Column(nullable = false)
     private Boolean aporteFamiliar;
     @Column(precision = 10, scale = 2)
     private BigDecimal montoAporteFamiliar;
 
-    // Ingresos propios
     @Column(nullable = false)
     private Boolean ingresosPropios;
     @Column(precision = 10, scale = 2)
     private BigDecimal montoIngresosPropios;
 
-    // Aporte al hogar
     @Column(nullable = false)
     private Boolean aporteHogar;
     @Column(precision = 10, scale = 2)

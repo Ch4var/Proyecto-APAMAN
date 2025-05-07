@@ -202,7 +202,6 @@ public class BeneficiarioController {
     @Autowired
     private FormularioSaludBeneficiarioRepository saludRepo;
 
-    // Obtener o crear un formulario (GET)
     @GetMapping("/{cedula}/salud")
     public FormularioSaludDTO getFormularioSalud(@PathVariable Integer cedula) {
         Beneficiario b = beneficiarioRepository.findById(cedula)
@@ -225,7 +224,6 @@ public class BeneficiarioController {
                 .orElseGet(() -> FormularioSaludDTO.builder().build());
     }
 
-    // Guardar o actualizar formulario (POST/PUT)
     @PostMapping("/{cedula}/salud")
     public FormularioSaludDTO saveFormularioSalud(
             @PathVariable Integer cedula,
@@ -237,7 +235,6 @@ public class BeneficiarioController {
         FormularioSaludBeneficiario fs = saludRepo.findByBeneficiarioCedula(b.getCedula())
                 .orElse(FormularioSaludBeneficiario.builder().beneficiario(b).build());
 
-        // Setear campos desde el DTO
         fs.setLimitacion(dto.getLimitacion());
         fs.setPadecimientos(dto.getPadecimientos());
         fs.setLugaresAtencion(dto.getLugaresAtencion());
@@ -253,7 +250,6 @@ public class BeneficiarioController {
 
         FormularioSaludBeneficiario saved = saludRepo.save(fs);
 
-        // Devolver DTO con datos actualizados
         return FormularioSaludDTO.builder()
                 .limitacion(saved.getLimitacion())
                 .padecimientos(saved.getPadecimientos())
@@ -559,14 +555,11 @@ public class BeneficiarioController {
         return ResponseEntity.noContent().build();
     }
 
-// — Media (fotos/videos) —
-
     @GetMapping("/{cedula}/historia-medica/{histId}/media")
     public List<HistoriaMediaDTO> listarMedia(
             @PathVariable Integer cedula,
             @PathVariable Long histId) {
 
-        // valida historia
         histRepo.findById(histId)
                 .filter(x -> x.getBeneficiario().getCedula().equals(cedula))
                 .orElseThrow(() -> new ResponseStatusException(
@@ -628,7 +621,6 @@ public class BeneficiarioController {
             @PathVariable Long histId,
             @PathVariable Long mediaId) {
 
-        // Validar historia y beneficiario
         HistoriaMedicaMedia m = mediaRepo.findById(mediaId)
                 .filter(x ->
                         x.getHistoria().getId().equals(histId)
@@ -639,11 +631,9 @@ public class BeneficiarioController {
                         "Media no encontrada: " + mediaId
                 ));
 
-        // Determinar tipo MIME
         MediaType mime;
         switch (m.getTipoMedia()) {
             case foto:
-                // Asumimos jpeg/png según extensión
                 if (m.getNombreArchivo().toLowerCase().endsWith(".png")) {
                     mime = MediaType.IMAGE_PNG;
                 } else {
@@ -651,7 +641,6 @@ public class BeneficiarioController {
                 }
                 break;
             case video:
-                // Asumimos MP4
                 mime = MediaType.valueOf("video/mp4");
                 break;
             default:

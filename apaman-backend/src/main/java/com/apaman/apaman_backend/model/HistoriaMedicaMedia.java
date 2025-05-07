@@ -1,4 +1,3 @@
-// HistoriaMedicaMedia.java
 package com.apaman.apaman_backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
