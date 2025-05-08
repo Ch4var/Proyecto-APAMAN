@@ -1,9 +1,9 @@
 package com.apaman.apaman_backend.model;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Entity
@@ -12,12 +12,12 @@ import lombok.Data;
 public class Usuario {
 
     @Id
-    @Column(name = "cedula")
     private String cedula;
 
     private String rol;
+
     private String correo;
 
-    @Column(name = "contrasena")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String contrasena;
 }

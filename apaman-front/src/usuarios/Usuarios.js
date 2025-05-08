@@ -1,38 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
+import { listUsuarios } from '../api/usuarios';
 
-const Usuarios = () => {
-  const [usuarios, setUsuarios] = useState([]);
-  const [filtro, setFiltro] = useState("");
+export default function Usuarios() {
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch("/api/usuarios")
-      .then((res) => res.json())
-      .then((data) => setUsuarios(data));
+    (async () => {
+      const { data } = await listUsuarios();
+      setUsers(data);
+    })();
   }, []);
 
-  const usuariosFiltrados = usuarios.filter((u) =>
-    u.username.toLowerCase().includes(filtro.toLowerCase())
-  );
-
   return (
-    <div>
-      <h2>Lista de Usuarios</h2>
-      <input
-        type="text"
-        placeholder="Buscar por nombre de usuario"
-        value={filtro}
-        onChange={(e) => setFiltro(e.target.value)}
-      />
-      <ul>
-        {usuariosFiltrados.map((usuario) => (
-          <li key={usuario.id}>
-            <strong>{usuario.username}</strong> ({usuario.correo})<br />
-            Roles: {usuario.roles?.map(r => r.nombre).join(", ") || "Ninguno"}
-          </li>
-        ))}
-      </ul>
+    <div className="container mt-4">
+      <h2>Administrar Usuarios</h2>
+      <table className="table table-bordered table-striped mt-3">
+        <thead className="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Cédula</th>
+            <th>Correo</th>
+            <th>Rol</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((u, i) => (
+            <tr key={u.cedula}>
+              <td>{i + 1}</td>
+              <td>{u.cedula}</td>
+              <td>{u.correo}</td>
+              <td>{u.rol}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-};
-
-export default Usuarios;
+}

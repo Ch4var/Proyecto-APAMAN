@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const LoginUsuario = () => {
+const Login = () => {
   const [cedula, setCedula] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [error, setError] = useState("");
@@ -61,4 +61,4 @@ const LoginUsuario = () => {
   );
 };
 
-export default LoginUsuario;
+export default Login;
