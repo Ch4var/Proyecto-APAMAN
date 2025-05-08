@@ -7,52 +7,51 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Repositorio JPA para la entidad {@link ActaAsociado}.
+ * Repositorio JPA para {@link ActaAsociado}.
  * <p>
- *  • PK = {@code Long id} (AUTO_INCREMENT).<br>
- *  • Permite búsquedas por cédula del asociado, por número de acta/acuerdo
- *    y por rangos de fechas de sesión.
+ *  • PK = {@code String asociadoCedula} (mismo valor que la cédula del asociado).<br>
+ *  • Permite búsquedas por cédula, número de acta/acuerdo y rangos de fechas.
  */
-public interface ActaAsociadoRepository extends JpaRepository<ActaAsociado, Long> {
+public interface ActaAsociadoRepository extends JpaRepository<ActaAsociado, String> {
 
     /*───────────────────────────────────────────────
      * Consultas derivadas
      *───────────────────────────────────────────────*/
 
-    /** Lista todas las actas de un asociado por cédula (orden cronológico). */
-    List<ActaAsociado> findByAsociadoCedulaOrderByFechaSesionAsc(String cedula);
+    /** Obtiene (máx. 1) acta vinculada a un asociado por su cédula. */
+    Optional<ActaAsociado> findByAsociadoCedula(String cedula);
 
-    /** Obtiene acta específica por número de acta y acuerdo. */
-    ActaAsociado findByNumActaAndNumAcuerdo(String numActa, String numAcuerdo);
+    /** Busca un acta exacta por número de acta y de acuerdo. */
+    Optional<ActaAsociado> findByNumActaAndNumAcuerdo(String numActa, String numAcuerdo);
 
-    /** Lista actas cuyo número contenga la secuencia indicada (LIKE %num%). */
-    List<ActaAsociado> findByNumActaContaining(String numActa);
+    /** Lista actas cuyo número contiene la secuencia indicada (ignore‑case). */
+    List<ActaAsociado> findByNumActaContainingIgnoreCase(String fragmento);
 
     /*───────────────────────────────────────────────
      * Consultas JPQL personalizadas
      *───────────────────────────────────────────────*/
 
-    /** Actas celebradas en el rango [inicio, fin] (inclusive). */
+    /** Actas cuya fechaSolicitud ∈ [inicio, fin]. */
     @Query("""
            SELECT a
-           FROM ActaAsociado a
-           WHERE a.fechaSesion BETWEEN :inicio AND :fin
-           ORDER BY a.fechaSesion
+             FROM ActaAsociado a
+            WHERE a.fechaSolicitud BETWEEN :inicio AND :fin
+            ORDER BY a.fechaSolicitud
            """)
-    List<ActaAsociado> findByFechaSesionBetween(@Param("inicio") LocalDate inicio,
-                                                @Param("fin")    LocalDate fin);
-
-    /** Actas de un asociado dentro de un rango de fechas. */
-    @Query("""
-           SELECT a
-           FROM ActaAsociado a
-           WHERE a.asociado.cedula = :cedula
-             AND a.fechaSesion BETWEEN :inicio AND :fin
-           ORDER BY a.fechaSesion
-           """)
-    List<ActaAsociado> findByCedulaAndFechaBetween(@Param("cedula") String cedula,
-                                                   @Param("inicio") LocalDate inicio,
+    List<ActaAsociado> findByFechaSolicitudBetween(@Param("inicio") LocalDate inicio,
                                                    @Param("fin")    LocalDate fin);
+
+    /** Acta de un asociado dentro de un rango de fechas (normalmente 0 o 1 resultado). */
+    @Query("""
+           SELECT a
+             FROM ActaAsociado a
+            WHERE a.asociado.cedula = :cedula
+              AND a.fechaSolicitud BETWEEN :inicio AND :fin
+           """)
+    Optional<ActaAsociado> findByCedulaAndFechaBetween(@Param("cedula") String cedula,
+                                                       @Param("inicio") LocalDate inicio,
+                                                       @Param("fin")    LocalDate fin);
 }

@@ -7,43 +7,44 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "acta_asociado")
+@Table(name="acta_asociado")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ActaAsociado {
 
     // ──────────────────────────────────────────
     // Clave primaria
     // ──────────────────────────────────────────
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
-
-    // ──────────────────────────────────────────
-    // Datos del acta
-    // ──────────────────────────────────────────
-    @Column(name = "fecha_sesion", nullable = false)
-    @NotNull
-    @PastOrPresent
-    private LocalDate fechaSesion;
-
-    @Column(name = "num_acta", nullable = false, length = 20)
-    @NotBlank
-    @Size(max = 20)
-    private String numActa;
-
-    @Column(name = "num_acuerdo", nullable = false, length = 20)
-    @NotBlank
-    @Size(max = 20)
-    private String numAcuerdo;
+    @Column(name="asociado_cedula", length=9)
+    private String asociadoCedula;
 
     // ──────────────────────────────────────────
     // Relación con Asociado
     // ──────────────────────────────────────────
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "asociado_cedula", nullable = false)
-    @NotNull
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
+    @MapsId                // PK = FK
+    @JoinColumn(name="asociado_cedula")
     private Asociado asociado;
+
+    // ──────────────────────────────────────────
+    // Datos del acta
+    // ──────────────────────────────────────────
+    @NotNull
+    @Column(name="fecha_solicitud")
+    private LocalDate fechaSolicitud;
+
+    @NotNull
+    @Column(name="fecha_aprobacion")
+    private LocalDate fechaAprobacion;
+
+    @NotBlank @Size(max=20)
+    @Column(name="num_acta")
+    private String numActa;
+
+    @NotBlank @Size(max=20)
+    @Column(name="num_acuerdo")
+    private String numAcuerdo;
 }

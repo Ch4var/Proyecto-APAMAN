@@ -13,6 +13,7 @@ import java.time.Period;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Asociado {
 
     // ──────────────────────────────────────────
@@ -25,9 +26,9 @@ public class Asociado {
     @Size(max = 9)
     private String cedula;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 20)
     @NotBlank
-    @Size(max = 100)
+    @Size(max = 20)
     private String nombre;
 
     @Column(name = "apellido_1", nullable = false, length = 20)
@@ -48,7 +49,7 @@ public class Asociado {
 
     public enum Sexo {
         Masculino,
-        Femenina,
+        Femenino,
         Otro
     }
 
@@ -64,9 +65,6 @@ public class Asociado {
     // ──────────────────────────────────────────
     // Información de asociación
     // ──────────────────────────────────────────
-    @Column(name = "fecha_asociacion", nullable = false)
-    @NotNull
-    private LocalDate fechaAsociacion;
 
     @Column(name = "estado", nullable = false)
     @NotNull
@@ -75,22 +73,27 @@ public class Asociado {
     // ──────────────────────────────────────────
     // Información de pagos / morosidad
     // ──────────────────────────────────────────
-    @Column(name = "cuota_mensual", nullable = false, precision = 10, scale = 2)
+
     @NotNull
+    @Digits(integer = 8, fraction = 2)
     @DecimalMin("0.00")
+    @Column(name="cuota_mensual", precision=10, scale=2, nullable=false)
     private BigDecimal cuotaMensual;
 
-    @Column(name = "estado_morosidad", nullable = false)
     @NotNull
+    @Column(name = "estado_morosidad", nullable = false)
     private Boolean estadoMorosidad = false;
 
-    @Column(name = "meses_adeudo", nullable = false)
+    @NotNull
     @Min(0)
+    @Column(name="meses_adeudo", nullable=false)
     private Integer mesesAdeudo = 0;
 
-    @Column(name = "cantidad_adeudo", nullable = false, precision = 10, scale = 2)
+    @NotNull
+    @Digits(integer = 8, fraction = 2)
     @DecimalMin("0.00")
-    private BigDecimal cantidadAdeudo = BigDecimal.ZERO;
+    @Column(name="cantidad_adeudo", precision=10, scale=2, nullable=false)
+    private BigDecimal cantidadAdeudo;
 
     // ──────────────────────────────────────────
     // Contacto
@@ -100,9 +103,10 @@ public class Asociado {
     @NotBlank
     private String correo;
 
-    @Column(name = "telefono", nullable = false, length = 20)
     @NotBlank
-    @Pattern(regexp = "\\+?[0-9]{7,20}")
+    @Size(max = 8)
+    @Pattern(regexp = "[0-9]{8}")
+    @Column(name="telefono", length=8, nullable=false)
     private String telefono;
 
     @Column(name = "direccion", nullable = false, length = 200)

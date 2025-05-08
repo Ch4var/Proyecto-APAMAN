@@ -1,56 +1,50 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
 
 /**
  * Vista principal del módulo de Asociados.
- * Incluye:
- *   • Tabla con scroll horizontal sincronizado (header + body)
- *   • Acciones CRUD y accesos a sub‑recursos (Observaciones, Actas, Referentes)
- *   • Sincronización de scroll (para tablas anchas) y recarga automática tras borrar
+ * • Tabla con scroll horizontal sincronizado (header + body)
+ * • Acciones CRUD y enlaces a sub‑recursos (Observaciones, Acta, Referentes)
  */
 export default function Asociados() {
     const [asociados, setAsociados] = useState([]);
     const navigate = useNavigate();
 
-    /* Refs para sincronizar scroll horizontal */
+    /* refs para scroll horizontal */
     const topScrollRef = useRef(null);
     const bottomScrollRef = useRef(null);
     const tableRef = useRef(null);
 
-    /* ──────────────────── CARGA DE DATOS ──────────────────── */
-    useEffect(() => {
-        loadAsociados();
-    }, []);
+    /* ─────────────── CARGA ─────────────── */
+    useEffect(() => { loadAsociados(); }, []);
 
     const loadAsociados = async () => {
         try {
             const { data } = await axios.get('http://localhost:8080/asociados');
             setAsociados(data);
         } catch (err) {
-            console.error('Error cargando asociados', err);
+            console.error(err);
             alert('Error cargando asociados');
         }
     };
 
-    /* ──────────────────── BORRADO ──────────────────── */
+    /* ─────────────── BORRADO ─────────────── */
     const deleteAsociado = async (cedula) => {
         try {
             await axios.delete(`http://localhost:8080/asociados/${cedula}`);
             loadAsociados();
         } catch (err) {
-            console.error('Error borrando asociado', err);
+            console.error(err);
             alert('No se pudo borrar el asociado');
         }
     };
 
-    const confirmDelete = (cedula) => {
-        if (window.confirm('¿Está seguro de que desea eliminar este asociado?')) {
-            deleteAsociado(cedula);
-        }
-    };
+    const confirmDelete = (cedula) =>
+        window.confirm('¿Eliminar este asociado?') && deleteAsociado(cedula);
 
-    /* ──────────────────── ACCIONES ──────────────────── */
+    /* ─────────────── ACCIONES ─────────────── */
     const handleActionChange = (e, cedula) => {
         const action = e.target.value;
         switch (action) {
@@ -63,8 +57,8 @@ export default function Asociados() {
             case 'observaciones':
                 navigate(`/asociados/${cedula}/observaciones`);
                 break;
-            case 'actas':
-                navigate(`/asociados/${cedula}/actas`);
+            case 'acta':
+                navigate(`/asociados/${cedula}/acta`);
                 break;
             case 'referentes':
                 navigate(`/asociados/${cedula}/referentes`);
@@ -75,10 +69,10 @@ export default function Asociados() {
             default:
                 break;
         }
-        e.target.selectedIndex = 0; // Reiniciar select
+        e.target.selectedIndex = 0; // reset select
     };
 
-    /* ──────────────────── SYNC SCROLL ──────────────────── */
+    /* ─────────────── SYNC SCROLL ─────────────── */
     useEffect(() => {
         const top = topScrollRef.current;
         const bottom = bottomScrollRef.current;
@@ -92,9 +86,7 @@ export default function Asociados() {
 
         const setDummyWidth = () => {
             if (tableRef.current) {
-                const width = tableRef.current.scrollWidth;
-                // la primera y única "capa" del topScroll es un div fantasma
-                top.firstChild.style.width = width + 'px';
+                top.firstChild.style.width = `${tableRef.current.scrollWidth}px`;
             }
         };
         setDummyWidth();
@@ -107,46 +99,30 @@ export default function Asociados() {
         };
     }, [asociados]);
 
-    /* ──────────────────── RENDER ──────────────────── */
+    /* ─────────────── RENDER ─────────────── */
     return (
         <div className="container mt-4">
-            {/* Encabezado y botones de acción globales */}
+            {/* header */}
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <h2 className="mb-0">Lista de Asociados</h2>
                 <div>
-                    <button
-                        className="btn btn-info mx-2"
-                        onClick={() => navigate('/asociados/search')}
-                    >
+                    <button className="btn btn-info mx-2" onClick={() => navigate('/asociados/search')}>
                         Buscar Asociado
                     </button>
-                    <button
-                        className="btn btn-success"
-                        onClick={() => navigate('/asociados/add')}
-                    >
+                    <button className="btn btn-success" onClick={() => navigate('/asociados/add')}>
                         Agregar Asociado
                     </button>
                 </div>
             </div>
 
-            {/* Scrollbar superior para desplazamiento horizontal */}
-            <div
-                ref={topScrollRef}
-                style={{ overflowX: 'auto', overflowY: 'hidden' }}
-            >
+            {/* top scrollbar */}
+            <div ref={topScrollRef} style={{ overflowX: 'auto', overflowY: 'hidden' }}>
                 <div style={{ height: '1px', width: '1px' }} />
             </div>
 
-            {/* Tabla principal */}
-            <div
-                ref={bottomScrollRef}
-                className="table-responsive"
-                style={{ maxHeight: '70vh', overflowY: 'auto' }}
-            >
-                <table
-                    ref={tableRef}
-                    className="table table-bordered table-striped"
-                >
+            {/* table */}
+            <div ref={bottomScrollRef} className="table-responsive" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                <table ref={tableRef} className="table table-bordered table-striped">
                     <thead className="table-dark" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                     <tr>
                         <th>#</th>
@@ -155,7 +131,6 @@ export default function Asociados() {
                         <th>Sexo</th>
                         <th>Fecha Nac.</th>
                         <th>Edad</th>
-                        <th>Fecha Asociación</th>
                         <th>Moroso</th>
                         <th>Meses Adeudo</th>
                         <th>Monto Adeudo</th>
@@ -173,27 +148,32 @@ export default function Asociados() {
                             <td>{a.cedula}</td>
                             <td>{`${a.nombre} ${a.apellido1} ${a.apellido2}`}</td>
                             <td>{a.sexo}</td>
-                            <td>{a.fechaNacimiento}</td>
+                            <td>{dayjs(a.fechaNacimiento).format('DD/MM/YYYY')}</td>
                             <td>{a.edad}</td>
-                            <td>{a.fechaAsociacion}</td>
                             <td>{a.estadoMorosidad ? 'Sí' : 'No'}</td>
                             <td>{a.mesesAdeudo}</td>
-                            <td>{Number(a.cantidadAdeudo).toLocaleString('es-CR', { style: 'currency', currency: 'CRC' })}</td>
-                            <td>{Number(a.cuotaMensual).toLocaleString('es-CR', { style: 'currency', currency: 'CRC' })}</td>
+                            <td>
+                                {Number(a.cantidadAdeudo).toLocaleString('es-CR', {
+                                    style: 'currency',
+                                    currency: 'CRC'
+                                })}
+                            </td>
+                            <td>
+                                {Number(a.cuotaMensual).toLocaleString('es-CR', {
+                                    style: 'currency',
+                                    currency: 'CRC'
+                                })}
+                            </td>
                             <td>{a.telefono}</td>
                             <td>{a.correo}</td>
                             <td>{a.estado ? 'Activo' : 'Inactivo'}</td>
                             <td style={{ minWidth: '180px' }}>
-                                <select
-                                    className="form-select"
-                                    defaultValue=""
-                                    onChange={(e) => handleActionChange(e, a.cedula)}
-                                >
+                                <select className="form-select" defaultValue="" onChange={(e) => handleActionChange(e, a.cedula)}>
                                     <option value="" disabled>Acciones</option>
                                     <option value="view">Ver</option>
                                     <option value="edit">Editar</option>
                                     <option value="observaciones">Observaciones</option>
-                                    <option value="actas">Actas</option>
+                                    <option value="acta">Acta</option>
                                     <option value="referentes">Referentes</option>
                                     <option value="delete">Borrar</option>
                                 </select>

@@ -14,12 +14,10 @@ CREATE TABLE IF NOT EXISTS `asociado` (
   `nombre` VARCHAR(20) NOT NULL,
   `apellido_1` VARCHAR(20) NOT NULL,
   `apellido_2` VARCHAR(20) NOT NULL,
-  `sexo` ENUM('Masculino', 'Femenina', 'Otro') NOT NULL,
+  `sexo` ENUM('Masculino', 'Femenino', 'Otro') NOT NULL,
   `fecha_nacimiento` DATE NOT NULL,
   `edad` INT NOT NULL,
   `estado` BOOLEAN DEFAULT TRUE,
-  
-  `fecha_asociacion` DATE NOT NULL,
   
   `cuota_mensual` DECIMAL(10,2) NOT NULL,
   `estado_morosidad` BOOLEAN DEFAULT FALSE,
@@ -27,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `asociado` (
   `cantidad_adeudo` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
   
   `correo` VARCHAR(100) NOT NULL,
-  `telefono` INT NOT NULL,
+  `telefono` VARCHAR(8) NOT NULL,
   `direccion` VARCHAR(200) NOT NULL,
   
   PRIMARY KEY (`cedula`)
@@ -37,20 +35,18 @@ CREATE TABLE IF NOT EXISTS `asociado` (
 -- Tabla `acta_asociado`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `acta_asociado` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `fecha_sesion` DATE NOT NULL,
-  `num_acta` VARCHAR(20) NOT NULL,
-  `num_acuerdo` VARCHAR(20) NOT NULL,
-  `asociado_cedula` VARCHAR(9) NOT NULL,
-  
-  PRIMARY KEY (`id`),
-  
-  INDEX idx_asoc_ced (asociado_cedula),
-  
-  CONSTRAINT acta_asociado_ibfk_1
-  FOREIGN KEY (asociado_cedula)
-  REFERENCES asociado(cedula)
-  ON DELETE CASCADE
+  `asociado_cedula`  VARCHAR(9)   NOT NULL,
+  `fecha_solicitud`  DATE         NOT NULL,
+  `fecha_aprobacion` DATE         NOT NULL,
+  `num_acta`         VARCHAR(20)  NOT NULL,
+  `num_acuerdo`      VARCHAR(20)  NOT NULL,
+
+  PRIMARY KEY (`asociado_cedula`),
+
+  CONSTRAINT fk_acta_asoc
+    FOREIGN KEY (asociado_cedula)
+    REFERENCES asociado(cedula)
+    ON DELETE CASCADE
 );
 
 -- -----------------------------------------------------
@@ -149,8 +145,8 @@ CREATE TABLE IF NOT EXISTS `beneficiario` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS observacion (
   `id`                   INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `asociado_cedula`      VARCHAR(9) NOT NULL,
-  `beneficiario_cedula`  VARCHAR(9) NOT NULL,
+  `asociado_cedula`      VARCHAR(9) NULL,
+  `beneficiario_cedula`  VARCHAR(9) NULL,
   `fecha`                TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `contenido`            VARCHAR(200),
   
