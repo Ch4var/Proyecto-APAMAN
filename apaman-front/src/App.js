@@ -14,6 +14,7 @@ import RutaPrivada from './RutaPrivada';
 
 import DashboardMenu from './layout/DashboardMenu';
 import Usuarios from './usuarios/Usuarios';
+import SearchUsuario from './usuarios/SearchUsuarios';
 
 import Asociados from './asociados/Asociados';
 import AddAsociado from './asociados/AddAsociado';
@@ -151,6 +152,14 @@ export default function App() {
           element={
             <RutaPrivada>
               <HistoriaMedicaBeneficiario />
+            </RutaPrivada>
+          }
+        />
+        <Route
+          path="/usuarios/search"
+          element={
+            <RutaPrivada>
+              <SearchUsuario />
             </RutaPrivada>
           }
         />

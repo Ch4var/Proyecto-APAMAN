@@ -54,6 +54,15 @@ export default function DashboardMenu() {
             Salud
           </button>
         </div>
+        {/* Logout */}
+        <div className="col-12 col-md-6 col-lg-4">
+          <button
+            className="btn btn-outline-dark w-100 py-3"
+            onClick={() => navigate('/logout')}
+          >
+            Cerrar Sesión
+          </button>
+        </div>
       </div>
     </div>
   );
