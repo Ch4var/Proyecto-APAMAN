@@ -1,39 +1,13 @@
 package com.apaman.apaman_backend.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Period;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
-/**
- * Entidad que representa a un asociado en el sistema.
- * Basada en la tabla `asociado` de la BD.
- */
 @Entity
 @Table(name = "asociado")
 @Data
@@ -41,102 +15,109 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Asociado {
 
+    // ──────────────────────────────────────────
+    // Identificación y datos personales
+    // ──────────────────────────────────────────
+    /** Identificador: cédula costarricense (formato 9 dígitos máx.). **/
     @Id
-    @NotNull @Positive
-    @Column(name = "cedula", nullable = false)
-    private Integer cedula;
+    @Column(name = "cedula", nullable = false, length = 9)
+    @NotBlank
+    @Size(max = 9)
+    private String cedula;
 
-    @NotBlank @Size(max = 100)
     @Column(nullable = false, length = 100)
+    @NotBlank
+    @Size(max = 100)
     private String nombre;
 
-    @NotBlank @Size(max = 20)
     @Column(name = "apellido_1", nullable = false, length = 20)
+    @NotBlank
+    @Size(max = 20)
     private String apellido1;
 
-    @NotBlank @Size(max = 20)
     @Column(name = "apellido_2", nullable = false, length = 20)
+    @NotBlank
+    @Size(max = 20)
     private String apellido2;
 
-    public enum Sexo { Masculino, Femenina, Otro }
-
-    @NotNull
+    // ENUM coincide con los valores definidos en la BD
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @NotNull
     private Sexo sexo;
 
-    @NotNull @Past
+    public enum Sexo {
+        Masculino,
+        Femenina,
+        Otro
+    }
+
     @Column(name = "fecha_nacimiento", nullable = false)
+    @NotNull
+    @Past
     private LocalDate fechaNacimiento;
 
-    @NotNull @Min(0)
-    @Column(nullable = false)
+    @Column(name = "edad", nullable = false)
+    @Min(0)
     private Integer edad;
 
-    @NotNull
-    @Column(nullable = false)
-    private Boolean estado = true;
-
-    @NotNull
+    // ──────────────────────────────────────────
+    // Información de asociación
+    // ──────────────────────────────────────────
     @Column(name = "fecha_asociacion", nullable = false)
+    @NotNull
     private LocalDate fechaAsociacion;
 
-    /**
-     * Relación One-to-One obligatoria:
-     * este es el lado dueño de la relación.
-     */
+    @Column(name = "estado", nullable = false)
     @NotNull
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "acta_asociado_id", nullable = false, unique = true)
-    @ToString.Exclude @EqualsAndHashCode.Exclude
-    private ActaAsociado actaAsociado;
+    private Boolean estado = true;
 
-    @NotNull @DecimalMin("0.00")
+    // ──────────────────────────────────────────
+    // Información de pagos / morosidad
+    // ──────────────────────────────────────────
     @Column(name = "cuota_mensual", nullable = false, precision = 10, scale = 2)
+    @NotNull
+    @DecimalMin("0.00")
     private BigDecimal cuotaMensual;
 
-    @NotNull
     @Column(name = "estado_morosidad", nullable = false)
+    @NotNull
     private Boolean estadoMorosidad = false;
 
-    @NotNull @Min(0)
     @Column(name = "meses_adeudo", nullable = false)
+    @Min(0)
     private Integer mesesAdeudo = 0;
 
-    @NotNull @DecimalMin("0.00")
     @Column(name = "cantidad_adeudo", nullable = false, precision = 10, scale = 2)
+    @DecimalMin("0.00")
     private BigDecimal cantidadAdeudo = BigDecimal.ZERO;
 
-    @NotBlank @Email @Size(max = 100)
-    @Column(nullable = false, length = 100)
+    // ──────────────────────────────────────────
+    // Contacto
+    // ──────────────────────────────────────────
+    @Column(name = "correo", nullable = false, length = 100)
+    @Email
+    @NotBlank
     private String correo;
 
-    @NotNull
-    @Column(nullable = false)
-    private Integer telefono;
+    @Column(name = "telefono", nullable = false, length = 20)
+    @NotBlank
+    @Pattern(regexp = "\\+?[0-9]{7,20}")
+    private String telefono;
 
-    @NotBlank @Size(max = 200)
-    @Column(nullable = false, length = 200)
+    @Column(name = "direccion", nullable = false, length = 200)
+    @NotBlank
+    @Size(max = 200)
     private String direccion;
 
-    /**
-     * Observaciones asociadas al asociado.
-     */
-    @OneToMany(mappedBy = "asociado", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude @EqualsAndHashCode.Exclude
-    private List<Observacion> observaciones = new ArrayList<>();
-
-    /**
-     * Referencias a los referentes de este asociado.
-     */
-    @OneToMany(mappedBy = "asociado", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude @EqualsAndHashCode.Exclude
-    private List<ReferenteAsociado> referentes = new ArrayList<>();
-
-    /**
-     * Asociados que tienen como referente a este asociado.
-     */
-    @OneToMany(mappedBy = "referente", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude @EqualsAndHashCode.Exclude
-    private List<ReferenteAsociado> asociadosReferidos = new ArrayList<>();
+    // ──────────────────────────────────────────
+    // Cálculo automático de la edad
+    // ──────────────────────────────────────────
+    @PrePersist
+    @PreUpdate
+    private void calcularEdad() {
+        if (fechaNacimiento != null) {
+            this.edad = Period.between(fechaNacimiento, LocalDate.now()).getYears();
+        }
+    }
 }

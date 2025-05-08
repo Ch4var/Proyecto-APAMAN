@@ -41,17 +41,25 @@ CREATE TABLE IF NOT EXISTS `acta_asociado` (
   `fecha_sesion` DATE NOT NULL,
   `num_acta` VARCHAR(20) NOT NULL,
   `num_acuerdo` VARCHAR(20) NOT NULL,
+  `asociado_cedula` VARCHAR(9) NOT NULL,
   
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  
+  INDEX idx_asoc_ced (asociado_cedula),
+  
+  CONSTRAINT acta_asociado_ibfk_1
+  FOREIGN KEY (asociado_cedula)
+  REFERENCES asociado(cedula)
+  ON DELETE CASCADE
 );
 
 -- -----------------------------------------------------
 -- Tabla `referente_asociado`
 -- -----------------------------------------------------
 CREATE TABLE referente_asociado (
-  id                INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  asociado_cedula   VARCHAR(9) NOT NULL,
-  referente_cedula  VARCHAR(9) NOT NULL,
+  `id`                INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `asociado_cedula`   VARCHAR(9) NOT NULL,
+  `referente_cedula`  VARCHAR(9) NOT NULL,
   
   INDEX idx_asoc_ced (asociado_cedula),
   INDEX idx_refe_ced (referente_cedula),
@@ -140,11 +148,11 @@ CREATE TABLE IF NOT EXISTS `beneficiario` (
 -- Tabla `observacion`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS observacion (
-  id                   INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  asociado_cedula      VARCHAR(9) NOT NULL,
-  beneficiario_cedula  VARCHAR(9) NOT NULL,
-  fecha                TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  contenido            VARCHAR(200),
+  `id`                   INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `asociado_cedula`      VARCHAR(9) NOT NULL,
+  `beneficiario_cedula`  VARCHAR(9) NOT NULL,
+  `fecha`                TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `contenido`            VARCHAR(200),
   
   INDEX idx_obs_asoc   (asociado_cedula),
   INDEX idx_obs_bene   (beneficiario_cedula),
@@ -168,10 +176,10 @@ CREATE TABLE IF NOT EXISTS observacion (
 -- Table `observaciones_beneficiario`
 -- -----------------------------------------------------
 CREATE TABLE observaciones_beneficiario (
-  id                   BIGINT NOT NULL AUTO_INCREMENT,
-  cedula_beneficiario  VARCHAR(9) NOT NULL,
-  observacion          TEXT    NOT NULL,
-  fecha                TIMESTAMP NOT NULL
+  `id`                   BIGINT NOT NULL AUTO_INCREMENT,
+  `cedula_beneficiario`  VARCHAR(9) NOT NULL,
+  `observacion`          TEXT    NOT NULL,
+  `fecha`                TIMESTAMP NOT NULL
                         DEFAULT CURRENT_TIMESTAMP
                         ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
@@ -183,21 +191,21 @@ CREATE TABLE observaciones_beneficiario (
 );
 
 CREATE TABLE formulario_salud_beneficiario (
-  id                       BIGINT       NOT NULL AUTO_INCREMENT,
-  cedula_beneficiario      VARCHAR(9)   NOT NULL,
-  limitacion               ENUM('Física','Mental','Ninguna')  NOT NULL,
-  padecimientos            TEXT         NULL,
-  lugares_atencion         TEXT         NULL,
-  reconoce_medicamentos    BOOLEAN      NOT NULL,
-  medicamentos             TEXT         NULL,
-  tiene_dieta              BOOLEAN      NOT NULL,
-  dieta                    TEXT         NULL,
-  utiliza_ortopedicos      BOOLEAN      NOT NULL,
-  ortopedicos              TEXT         NULL,
-  utiliza_anteojos         BOOLEAN      NOT NULL,
-  utiliza_audifonos        BOOLEAN      NOT NULL,
-  otro                     TEXT         NULL,
-  fecha_actualizacion      TIMESTAMP    NOT NULL
+  `id`                       BIGINT       NOT NULL AUTO_INCREMENT,
+  `cedula_beneficiario`      VARCHAR(9)   NOT NULL,
+  `limitacion`               ENUM('Física','Mental','Ninguna')  NOT NULL,
+  `padecimientos`            TEXT         NULL,
+  `lugares_atencion`         TEXT         NULL,
+  `reconoce_medicamentos`    BOOLEAN      NOT NULL,
+  `medicamentos`             TEXT         NULL,
+  `tiene_dieta`              BOOLEAN      NOT NULL,
+  `dieta`                    TEXT         NULL,
+  `utiliza_ortopedicos`      BOOLEAN      NOT NULL,
+  `ortopedicos`              TEXT         NULL,
+  `utiliza_anteojos`         BOOLEAN      NOT NULL,
+  `utiliza_audifonos`        BOOLEAN      NOT NULL,
+  `otro`                     TEXT         NULL,
+  `fecha_actualizacion`      TIMESTAMP    NOT NULL
                              DEFAULT CURRENT_TIMESTAMP
                              ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
@@ -211,28 +219,28 @@ CREATE TABLE formulario_salud_beneficiario (
 USE apaman;
 
 CREATE TABLE formulario_economico_beneficiario (
-  id                         BIGINT     NOT NULL AUTO_INCREMENT,
-  cedula_beneficiario        VARCHAR(9) NOT NULL,
+  `id`                         BIGINT     NOT NULL AUTO_INCREMENT,
+  `cedula_beneficiario`        VARCHAR(9) NOT NULL,
 
-  pension_rnc                BOOLEAN    NOT NULL,
-  monto_pension_rnc          DECIMAL(10,2) NULL,
+  `pension_rnc`                BOOLEAN    NOT NULL,
+  `monto_pension_rnc`          DECIMAL(10,2) NULL,
 
-  pension_ivm                BOOLEAN    NOT NULL,
-  monto_pension_ivm          DECIMAL(10,2) NULL,
+  `pension_ivm`                BOOLEAN    NOT NULL,
+  `monto_pension_ivm`          DECIMAL(10,2) NULL,
 
-  pension_otro               BOOLEAN    NOT NULL,
-  monto_pension_otro         DECIMAL(10,2) NULL,
+  `pension_otro`               BOOLEAN    NOT NULL,
+  `monto_pension_otro`         DECIMAL(10,2) NULL,
 
-  aporte_familiar            BOOLEAN    NOT NULL,
-  monto_aporte_familiar      DECIMAL(10,2) NULL,
+  `aporte_familiar`            BOOLEAN    NOT NULL,
+  `monto_aporte_familiar`      DECIMAL(10,2) NULL,
 
-  ingresos_propios           BOOLEAN    NOT NULL,
-  monto_ingresos_propios     DECIMAL(10,2) NULL,
+  `ingresos_propios`           BOOLEAN    NOT NULL,
+  `monto_ingresos_propios`     DECIMAL(10,2) NULL,
 
-  aporte_hogar               BOOLEAN    NOT NULL,
-  monto_aporte_hogar         DECIMAL(10,2) NULL,
+  `aporte_hogar`               BOOLEAN    NOT NULL,
+  `monto_aporte_hogar`         DECIMAL(10,2) NULL,
 
-  fecha_actualizacion        TIMESTAMP  NOT NULL
+  `fecha_actualizacion`        TIMESTAMP  NOT NULL
                                 DEFAULT CURRENT_TIMESTAMP
                                 ON UPDATE CURRENT_TIMESTAMP,
 
@@ -245,11 +253,11 @@ CREATE TABLE formulario_economico_beneficiario (
 );
 
 CREATE TABLE expediente_administrativo_beneficiario (
-  id                       BIGINT       NOT NULL AUTO_INCREMENT,
-  cedula_beneficiario      VARCHAR(9)   NOT NULL,
-  nombre_archivo           VARCHAR(255) NOT NULL,
-  contenido                LONGBLOB     NOT NULL,
-  fecha_subida             TIMESTAMP    NOT NULL
+  `id`                       BIGINT       NOT NULL AUTO_INCREMENT,
+  `cedula_beneficiario`      VARCHAR(9)   NOT NULL,
+  `nombre_archivo`           VARCHAR(255) NOT NULL,
+  `contenido`                LONGBLOB     NOT NULL,
+  `fecha_subida`             TIMESTAMP    NOT NULL
                                DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY idx_exped_bene (cedula_beneficiario),
@@ -260,12 +268,13 @@ CREATE TABLE expediente_administrativo_beneficiario (
 );
 
 CREATE TABLE historia_medica_beneficiario (
-  id                        BIGINT       NOT NULL AUTO_INCREMENT,
-  cedula_beneficiario       VARCHAR(9)   NOT NULL,
-  nombre_personal_salud     VARCHAR(100) NOT NULL,
-  tipo_terapia              VARCHAR(100) NOT NULL,
-  detalle                   TEXT         NOT NULL,
-  fecha_registro            TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `id`                        BIGINT       NOT NULL AUTO_INCREMENT,
+  `cedula_beneficiario`       VARCHAR(9)   NOT NULL,
+  `nombre_personal_salud`     VARCHAR(100) NOT NULL,
+  `tipo_terapia`              VARCHAR(100) NOT NULL,
+  `detalle`                   TEXT         NOT NULL,
+  `fecha_registro`            TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  
   PRIMARY KEY (id),
   KEY idx_hist_bene (cedula_beneficiario),
   CONSTRAINT fk_hist_bene FOREIGN KEY (cedula_beneficiario)
@@ -274,12 +283,12 @@ CREATE TABLE historia_medica_beneficiario (
 );
 
 CREATE TABLE historia_medica_media (
-  id                   BIGINT     NOT NULL AUTO_INCREMENT,
-  historia_id          BIGINT     NOT NULL,
-  nombre_archivo       VARCHAR(255) NOT NULL,
-  tipo_media           ENUM('foto','video') NOT NULL,
-  contenido            LONGBLOB   NOT NULL,
-  fecha_subida         TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `id`                   BIGINT     NOT NULL AUTO_INCREMENT,
+  `historia_id`          BIGINT     NOT NULL,
+  `nombre_archivo`       VARCHAR(255) NOT NULL,
+  `tipo_media`           ENUM('foto','video') NOT NULL,
+  `contenido`            LONGBLOB   NOT NULL,
+  `fecha_subida`         TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY idx_media_hist   (historia_id),
   CONSTRAINT fk_media_hist FOREIGN KEY (historia_id)

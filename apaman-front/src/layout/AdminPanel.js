@@ -35,7 +35,7 @@ export default function AdminPanel() {
     },
     {
       permiso: ['ADMINISTRADOR','ASISTENTE','REVISOR'],
-      to: '/associates',
+      to: '/asociados',
       icon: <FaUsers />,
       texto: 'Administrar Asociados'
     },

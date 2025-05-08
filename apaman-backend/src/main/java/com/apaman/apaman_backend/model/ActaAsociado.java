@@ -1,27 +1,11 @@
 package com.apaman.apaman_backend.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.*;
+
 import java.time.LocalDate;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
-/**
- * Entidad que representa el acta de constitución de uno o más asociados.
- */
 @Entity
 @Table(name = "acta_asociado")
 @Data
@@ -29,29 +13,37 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ActaAsociado {
 
+    // ──────────────────────────────────────────
+    // Clave primaria
+    // ──────────────────────────────────────────
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "id")
+    private Long id;
 
-    @NotNull
+    // ──────────────────────────────────────────
+    // Datos del acta
+    // ──────────────────────────────────────────
     @Column(name = "fecha_sesion", nullable = false)
+    @NotNull
+    @PastOrPresent
     private LocalDate fechaSesion;
 
+    @Column(name = "num_acta", nullable = false, length = 20)
     @NotBlank
     @Size(max = 20)
-    @Column(name = "num_acta", length = 20, nullable = false)
     private String numActa;
 
+    @Column(name = "num_acuerdo", nullable = false, length = 20)
     @NotBlank
     @Size(max = 20)
-    @Column(name = "num_acuerdo", length = 20, nullable = false)
     private String numAcuerdo;
 
-    /**
-     * Relación One-to-One bidireccional:
-     * esta es la inversa (mappedBy).
-     */
-    @OneToOne(mappedBy = "actaAsociado", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude @EqualsAndHashCode.Exclude
+    // ──────────────────────────────────────────
+    // Relación con Asociado
+    // ──────────────────────────────────────────
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "asociado_cedula", nullable = false)
+    @NotNull
     private Asociado asociado;
 }

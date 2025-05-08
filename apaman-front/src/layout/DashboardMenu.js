@@ -12,7 +12,7 @@ export default function DashboardMenu() {
         <div className="col-12 col-md-6 col-lg-4">
           <button
             className="btn btn-primary w-100 py-3"
-            onClick={() => navigate('/associates')}
+            onClick={() => navigate('/asociados')}
           >
             Administrar Asociados
           </button>
